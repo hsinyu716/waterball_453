@@ -1,7 +1,7 @@
 package main
 
 import (
-	"waterball/1_H/internal/common"
+	"cosmos.showdown/internal/common"
 )
 
 func main() {
@@ -11,6 +11,6 @@ func main() {
 	p4 := new(common.Human)
 
 	desk := common.NewDesk()
-	showdown := common.NewShowdown(desk, &[]common.PlayerService{p1, p2, p3, p4})
+	showdown := common.NewShowdown(desk, &[]common.IPlayer{p1, p2, p3, p4})
 	showdown.Start()
 }

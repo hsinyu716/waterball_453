@@ -14,7 +14,7 @@ func NewDesk() *Desk {
 	return desk
 }
 
-type DeskService interface {
+type IDesk interface {
 	Push(card *Card)
 	Shuffle()
 	DrawCard() *Card

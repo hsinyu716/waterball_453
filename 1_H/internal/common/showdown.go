@@ -8,23 +8,23 @@ const RoundNum = 13
 
 type Showdown struct {
 	desk      *Desk
-	players   []PlayerService
+	players   []IPlayer
 	turnMoves []*TurnMove
 }
 
-func NewShowdown(desk *Desk, players *[]PlayerService) *Showdown {
+func NewShowdown(desk *Desk, players *[]IPlayer) *Showdown {
 	return &Showdown{
 		desk:    desk,
 		players: *players,
 	}
 }
 
-type ShowdownService interface {
-	GetPlayers() []PlayerService
+type IShowdown interface {
+	GetPlayers() []IPlayer
 	Start()
 }
 
-func (s *Showdown) GetPlayers() []PlayerService {
+func (s *Showdown) GetPlayers() []IPlayer {
 	return s.players
 }
 
@@ -63,7 +63,7 @@ func (s *Showdown) playRound() {
 	}
 }
 
-func (s *Showdown) takeTurn(player PlayerService) {
+func (s *Showdown) takeTurn(player IPlayer) {
 	fmt.Println(fmt.Sprintf("It's (%s)'s turn", player.GetName()))
 	turnMove := player.TakeTurn()
 	s.turnMoves = append(s.turnMoves, turnMove)
@@ -101,7 +101,7 @@ func (s *Showdown) compareToTurn() *TurnMove {
 	return winnerTurnMove
 }
 
-func (s *Showdown) compareToWinner() PlayerService {
+func (s *Showdown) compareToWinner() IPlayer {
 	players := s.GetPlayers()
 	winner := players[0]
 	for _, player := range players {
@@ -113,7 +113,7 @@ func (s *Showdown) compareToWinner() PlayerService {
 }
 
 func (s *Showdown) gameOver() {
-	var winner PlayerService
+	var winner IPlayer
 	winner = s.compareToWinner()
 	fmt.Println(fmt.Sprintf("The winner is %s.\n", winner.GetName()))
 }

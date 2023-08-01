@@ -4,15 +4,15 @@ import "fmt"
 
 type ExchangeHands struct {
 	countdown int64
-	exchanger PlayerService
-	exchangee PlayerService
+	exchanger IPlayer
+	exchangee IPlayer
 }
 
-type ExchangeHandsService interface {
+type IExchangeHands interface {
 	Countdown()
 }
 
-func NewExchangeHands(exchanger PlayerService, exchangee PlayerService) *ExchangeHands {
+func NewExchangeHands(exchanger IPlayer, exchangee IPlayer) *ExchangeHands {
 	exHands := &ExchangeHands{
 		countdown: 3,
 		exchanger: exchanger,

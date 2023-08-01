@@ -1,19 +1,19 @@
 package common
 
 type TurnMove struct {
-	player        PlayerService
+	player        IPlayer
 	exchangeHands *ExchangeHands
 	showCard      *Card
 }
 
-type TurnMoveService interface {
+type ITurnMove interface {
 	GetExchangeHands() *ExchangeHands
-	GetPlayer() PlayerService
+	GetPlayer() IPlayer
 	SetShowCard(card *Card)
 	GetShowCard() *Card
 }
 
-func NewTurnMove(player PlayerService, exchangeHands *ExchangeHands, showCard *Card) *TurnMove {
+func NewTurnMove(player IPlayer, exchangeHands *ExchangeHands, showCard *Card) *TurnMove {
 	return &TurnMove{
 		player:        player,
 		exchangeHands: exchangeHands,
@@ -25,7 +25,7 @@ func (t *TurnMove) GetExchangeHands() *ExchangeHands {
 	return t.exchangeHands
 }
 
-func (t *TurnMove) GetPlayer() PlayerService {
+func (t *TurnMove) GetPlayer() IPlayer {
 	return t.player
 }
 

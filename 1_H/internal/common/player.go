@@ -18,7 +18,7 @@ type PlayerAdapter struct {
 	exchangeHands *ExchangeHands
 }
 
-type PlayerService interface {
+type IPlayer interface {
 	NameHimself(i int)
 	SetShowdown(showdown_ *Showdown)
 	SetHand(hand *Hand)
@@ -90,8 +90,8 @@ func (p *PlayerAdapter) GetName() string {
 	return p.name
 }
 
-func (p *PlayerAdapter) filterOtherPlayer() []PlayerService {
-	var selectPlayers []PlayerService
+func (p *PlayerAdapter) filterOtherPlayer() []IPlayer {
+	var selectPlayers []IPlayer
 	for _, player := range p.showdown.GetPlayers() {
 		if p.name != player.GetName() {
 			selectPlayers = append(selectPlayers, player)
@@ -100,7 +100,7 @@ func (p *PlayerAdapter) filterOtherPlayer() []PlayerService {
 	return selectPlayers
 }
 
-func (p *PlayerAdapter) selectExchangeHandsTarget(players []PlayerService) *ExchangeHands {
+func (p *PlayerAdapter) selectExchangeHandsTarget(players []IPlayer) *ExchangeHands {
 	printPlayerChoices(players)
 	input, err := reader.ReadString('\n')
 	if err != nil {
@@ -115,7 +115,7 @@ func (p *PlayerAdapter) selectExchangeHandsTarget(players []PlayerService) *Exch
 	return exchangeHands
 }
 
-func printPlayerChoices(players []PlayerService) {
+func printPlayerChoices(players []IPlayer) {
 	str := "\n"
 	for i, player := range players {
 		str += fmt.Sprintf("(%d) %s \n", i, player.GetName())
