@@ -17,5 +17,10 @@ func (m *HabitsBaseStrategy) sortValue(i Individual, datum Individual) Individua
 }
 
 func (m *HabitsBaseStrategy) compareTo(data []Individual, i, j int) bool {
-	return data[i].HabitsMatchCnt > data[j].HabitsMatchCnt
+	if data[i].HabitsMatchCnt > data[j].HabitsMatchCnt {
+		return true
+	} else if data[i].HabitsMatchCnt == data[j].HabitsMatchCnt {
+		return data[i].ID < data[j].ID
+	}
+	return false
 }

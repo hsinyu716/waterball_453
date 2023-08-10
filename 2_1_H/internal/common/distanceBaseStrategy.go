@@ -17,5 +17,10 @@ func (m *DistanceBaseStrategy) sortValue(i Individual, datum Individual) Individ
 }
 
 func (m *DistanceBaseStrategy) compareTo(data []Individual, i, j int) bool {
-	return data[i].Distance < data[j].Distance
+	if data[i].Distance < data[j].Distance {
+		return true
+	} else if data[i].Distance == data[j].Distance {
+		return data[i].ID < data[j].ID
+	}
+	return false
 }

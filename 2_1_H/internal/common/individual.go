@@ -73,7 +73,6 @@ func (i *Individual) GenerateRandomIndividual() []Individual {
 			Coord:  coord,
 		})
 	}
-
 	return data
 }
 
