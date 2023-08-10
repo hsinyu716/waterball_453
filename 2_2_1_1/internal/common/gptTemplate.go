@@ -14,7 +14,7 @@ type SortBaseGPT struct {
 func (s *SortBaseGPT) Sort(u []int) []int {
 	n := len(u)
 	for i := 0; i < n; i++ {
-		for j := 0; j < n-1; j++ {
+		for j := 0; j < n-i-1; j++ {
 			// 使用注入的 Sorter 來比較
 			if s.Sorter.Less(u[j], u[j+1]) {
 				u[j], u[j+1] = u[j+1], u[j]
