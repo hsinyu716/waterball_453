@@ -17,7 +17,7 @@ type Individual struct {
 	HabitsMatchCnt int
 }
 
-func (i *Individual) SetDistance(d float64) {
+func (i *Individual) setDistance(d float64) {
 	i.Distance = d
 }
 

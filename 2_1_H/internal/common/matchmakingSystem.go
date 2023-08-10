@@ -1,16 +1,21 @@
 package common
 
+import (
+	"github.com/barkimedes/go-deepcopy"
+	"sort"
+)
+
 type MatchmakingSystem struct {
-	matchBy MatchmakingStrategy
+	BaseStrategy MatchmakingStrategy
 }
 
 type IMatchmakingSystem interface {
 	matchSort(i Individual, data []Individual) Individual
 }
 
-func NewMatchMakingSystem(matchBy MatchmakingStrategy) *MatchmakingSystem {
+func NewMatchMakingSystem(baseStrategy MatchmakingStrategy) *MatchmakingSystem {
 	return &MatchmakingSystem{
-		matchBy,
+		baseStrategy,
 	}
 }
 
@@ -22,19 +27,18 @@ func (m *MatchmakingSystem) Match(data []Individual) {
 }
 
 func (m *MatchmakingSystem) matchSort(i Individual, data []Individual) Individual {
-	//removeIndex := 0
-	//for index, datum := range data {
-	//	if i.ID == datum.ID {
-	//		removeIndex = index
-	//		continue
-	//	}
-	//	data[index] = m.matchBy.sortTemplate(i, datum)
-	//}
-	//tmpData := deepcopy.MustAnything(data).([]Individual)
-	//tmpData = append(tmpData[:removeIndex], tmpData[removeIndex+1:]...)
-	//sort.Slice(tmpData, func(i, j int) bool {
-	//	return m.matchBy.compareTo(tmpData, i, j)
-	//})
-	tmpData := m.matchBy.matchSort(i, data)
-	return tmpData[0]
+	removeSelfIndex := 0
+	for index, datum := range data {
+		if i.ID == datum.ID {
+			removeSelfIndex = index
+			continue
+		}
+		data[index] = m.BaseStrategy.sortValue(i, datum)
+	}
+	cloneData := deepcopy.MustAnything(data).([]Individual)
+	cloneData = append(cloneData[:removeSelfIndex], cloneData[removeSelfIndex+1:]...)
+	sort.Slice(cloneData, func(i, j int) bool {
+		return m.BaseStrategy.compareTo(cloneData, i, j)
+	})
+	return cloneData[0]
 }
