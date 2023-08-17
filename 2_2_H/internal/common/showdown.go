@@ -7,6 +7,7 @@ import (
 const RoundNum = 13
 
 type Showdown struct {
+	CardsGame[*Showdown]
 	desk      *Desk
 	players   []IPlayer
 	turnMoves []*TurnMove
@@ -22,26 +23,15 @@ func NewShowdown(desk *Desk, players *[]IPlayer) *Showdown {
 type IShowdown interface {
 	GetPlayers() []IPlayer
 	Start()
+	GetDesk() *Desk
 }
 
 func (s *Showdown) GetPlayers() []IPlayer {
 	return s.players
 }
 
-func (s *Showdown) Start() {
-	s.nameThemselves()
-	s.desk.Shuffle()
-	s.drawHand()
-	s.playRound()
-	s.gameOver()
-}
-
-func (s *Showdown) nameThemselves() {
-	for i, p := range s.players {
-		p.SetShowdown(s)
-		p.NameHimself(i + 1)
-		p.SetHand(NewHand(p.GetName()))
-	}
+func (s *Showdown) GetDesk() *Desk {
+	return s.desk
 }
 
 func (s *Showdown) drawHand() {
@@ -85,7 +75,7 @@ func (s *Showdown) printShowCards() {
 	for _, move := range s.turnMoves {
 		card := move.GetPlayer().GetHand().Show(0)
 		move.SetShowCard(card)
-		str += fmt.Sprintf("%v", move.GetShowCard())
+		str += fmt.Sprintf("%v ", move.GetShowCard().translateS())
 	}
 	fmt.Println(str)
 }
@@ -96,6 +86,7 @@ func (s *Showdown) compareToTurn() *TurnMove {
 		if winnerTurnMove.GetShowCard().GetRank() > move.GetShowCard().GetRank() {
 			winnerTurnMove = move
 		} else if winnerTurnMove.GetShowCard().GetRank() == move.GetShowCard().GetRank() {
+			fmt.Println(winnerTurnMove.GetShowCard().GetSuit(), move.GetShowCard().GetSuit())
 			if winnerTurnMove.GetShowCard().GetSuit() > move.GetShowCard().GetSuit() {
 				winnerTurnMove = move
 			}
@@ -113,10 +104,4 @@ func (s *Showdown) compareToWinner() IPlayer {
 		}
 	}
 	return winner
-}
-
-func (s *Showdown) gameOver() {
-	var winner IPlayer
-	winner = s.compareToWinner()
-	fmt.Println(fmt.Sprintf("The winner is %s.\n", winner.GetName()))
 }

@@ -70,6 +70,33 @@ const (
 	Spade
 )
 
+var suit = map[SuitEnumType]string{
+	Club:    "梅花",
+	Diamond: "方塊",
+	Heart:   "紅心",
+	Spade:   "黑桃",
+}
+
+var rank = map[RankEnumType]string{
+	TWO:   "2",
+	THREE: "3",
+	FORE:  "4",
+	FIVE:  "5",
+	SIX:   "6",
+	SEVEN: "7",
+	EIGHT: "8",
+	NINE:  "9",
+	TEN:   "10",
+	JACK:  "J",
+	QUEEN: "Q",
+	KING:  "K",
+	ACE:   "A",
+}
+
+func (c *Card) translateS() string {
+	return fmt.Sprintf("%s %s", suit[c.GetSuit()], rank[c.GetRank()])
+}
+
 const (
 	N0 NumberEnumType = iota
 	N1
@@ -98,5 +125,5 @@ var colors = map[ColorEnumType]string{
 }
 
 func (c *Card) translate() string {
-	return fmt.Sprintf("%s %d", colors[c.color], c.GetNumber()+1)
+	return fmt.Sprintf("%s %d", colors[c.GetColor()], c.GetNumber()+1)
 }

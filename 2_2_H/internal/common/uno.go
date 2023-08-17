@@ -7,10 +7,10 @@ import (
 const HandCardNumber = 5
 
 type Uno struct {
-	desk      *Desk
-	pool      *Desk
-	players   []IPlayer
-	turnMoves []*TurnMove
+	CardsGame[*Uno]
+	desk    *Desk
+	pool    *Desk
+	players []IPlayer
 }
 
 func NewUno(desk *Desk, players *[]IPlayer) *Uno {
@@ -24,28 +24,19 @@ func NewUno(desk *Desk, players *[]IPlayer) *Uno {
 type IUno interface {
 	GetPlayers() []IPlayer
 	Start()
+	GetDesk() *Desk
 }
 
 func (u *Uno) GetPlayers() []IPlayer {
 	return u.players
 }
 
-func (u *Uno) Start() {
-	u.nameThemselves()
-	u.desk.Shuffle()
-	u.drawHand()
-	u.showTable()
-	u.playRound()
-	u.gameOver()
+func (u *Uno) GetDesk() *Desk {
+	return u.desk
 }
 
-func (u *Uno) nameThemselves() {
-	for i, p := range u.players {
-		fmt.Println(p)
-		p.SetGame(u)
-		p.NameHimself(i + 1)
-		p.SetHand(NewHand(p.GetName()))
-	}
+func (u *Uno) GetPool() *Desk {
+	return u.pool
 }
 
 func (u *Uno) drawHand() {
@@ -65,15 +56,11 @@ func (u *Uno) showTable() {
 	fmt.Println(fmt.Sprintf("First card is %v", card.translate()))
 }
 
-func (u *Uno) tableTopCard() *Card {
-	return u.pool.TopCard()
-}
-
 func (u *Uno) playRound() {
 	i := 0
 	for {
 		fmt.Println(fmt.Sprintf("ROUND %d", i+1))
-		for _, player := range u.players {
+		for _, player := range u.GetPlayers() {
 			u.takeTurn(player)
 			if player.GetCardSize() == 0 {
 				return
@@ -81,6 +68,10 @@ func (u *Uno) playRound() {
 		}
 		i++
 	}
+}
+
+func (u *Uno) tableTopCard() *Card {
+	return u.pool.TopCard()
 }
 
 func (u *Uno) takeTurn(player IPlayer) {
@@ -100,10 +91,4 @@ func (u *Uno) compareToWinner() IPlayer {
 		}
 	}
 	return winner
-}
-
-func (u *Uno) gameOver() {
-	var winner IPlayer
-	winner = u.compareToWinner()
-	fmt.Println(fmt.Sprintf("The winner is %s.\n", winner.GetName()))
 }

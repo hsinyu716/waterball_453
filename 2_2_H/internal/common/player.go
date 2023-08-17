@@ -10,18 +10,17 @@ import (
 
 var reader = bufio.NewReader(os.Stdin)
 
-type PlayerAdapter struct {
+type PlayerAdapter[T any] struct {
 	name          string
 	point         int
 	showdown      *Showdown
 	hand          *Hand
 	exchangeHands *ExchangeHands
-	uno           *Uno
+	game          ICardGame[T]
 }
 
 type IPlayer interface {
 	NameHimself(i int)
-	SetShowdown(showdown_ *Showdown)
 	SetHand(hand *Hand)
 	AddHandCard(card *Card)
 	GetHand() *Hand
@@ -36,72 +35,69 @@ type IPlayer interface {
 	GetName() string
 	GetCardSize() int
 
-	SetGame(uno interface{})
+	SetGame(game ICardGame[any])
+	GetGame() ICardGame[any]
 	TakeTurnUno()
 }
 
-func (p *PlayerAdapter) NameHimself(i int) {
+func (p *PlayerAdapter[T]) NameHimself(i int) {
 }
 
-func (p *PlayerAdapter) SetShowdown(showdown *Showdown) {
-	p.showdown = showdown
-}
-
-func (p *PlayerAdapter) SetHand(hand *Hand) {
+func (p *PlayerAdapter[T]) SetHand(hand *Hand) {
 	p.hand = hand
 }
 
-func (p *PlayerAdapter) AddHandCard(card *Card) {
+func (p *PlayerAdapter[T]) AddHandCard(card *Card) {
 	p.hand.AddCard(card)
 }
 
-func (p *PlayerAdapter) GetHand() *Hand {
+func (p *PlayerAdapter[T]) GetHand() *Hand {
 	return p.hand
 }
 
-func (p *PlayerAdapter) TakeTurn() *TurnMove {
+func (p *PlayerAdapter[T]) TakeTurn() *TurnMove {
 	return nil
 }
 
-func (p *PlayerAdapter) MakeExchangeHandsDecision() *ExchangeHands {
+func (p *PlayerAdapter[T]) MakeExchangeHandsDecision() *ExchangeHands {
 	return nil
 }
 
-func (p *PlayerAdapter) HasUsedExchangeHands() bool {
+func (p *PlayerAdapter[T]) HasUsedExchangeHands() bool {
 	return p.exchangeHands != nil
 }
 
-func (p *PlayerAdapter) GetExchangeHands() *ExchangeHands {
+func (p *PlayerAdapter[T]) GetExchangeHands() *ExchangeHands {
 	return p.exchangeHands
 }
 
-func (p *PlayerAdapter) SetExchangeHands(exchangeHands *ExchangeHands) {
+func (p *PlayerAdapter[T]) SetExchangeHands(exchangeHands *ExchangeHands) {
 	p.exchangeHands = exchangeHands
 }
 
-func (p *PlayerAdapter) ShowCard(index int) *Card {
+func (p *PlayerAdapter[T]) ShowCard(index int) *Card {
 	return p.GetHand().Show(index)
 }
 
-func (p *PlayerAdapter) GainPoint() {
+func (p *PlayerAdapter[T]) GainPoint() {
 	p.point++
 }
 
-func (p *PlayerAdapter) GetPoint() int {
+func (p *PlayerAdapter[T]) GetPoint() int {
 	return p.point
 }
 
-func (p *PlayerAdapter) GetName() string {
+func (p *PlayerAdapter[T]) GetName() string {
 	return p.name
 }
 
-func (p *PlayerAdapter) GetCardSize() int {
+func (p *PlayerAdapter[T]) GetCardSize() int {
 	return len(p.GetHand().cards)
 }
 
-func (p *PlayerAdapter) filterOtherPlayer() []IPlayer {
+func (p *PlayerAdapter[T]) filterOtherPlayer() []IPlayer {
 	var selectPlayers []IPlayer
-	for _, player := range p.showdown.GetPlayers() {
+	for _, player := range p.game.GetPlayers() {
 		if p.name != player.GetName() {
 			selectPlayers = append(selectPlayers, player)
 		}
@@ -109,7 +105,7 @@ func (p *PlayerAdapter) filterOtherPlayer() []IPlayer {
 	return selectPlayers
 }
 
-func (p *PlayerAdapter) selectExchangeHandsTarget(players []IPlayer) *ExchangeHands {
+func (p *PlayerAdapter[T]) selectExchangeHandsTarget(players []IPlayer) *ExchangeHands {
 	printPlayerChoices(players)
 	input, err := reader.ReadString('\n')
 	if err != nil {
@@ -132,12 +128,16 @@ func printPlayerChoices(players []IPlayer) {
 	fmt.Println(fmt.Sprintf("Select the target %s", str))
 }
 
-func (p *PlayerAdapter) SetGame(uno interface{}) {
-	p.uno = uno.(*Uno)
+func (p *PlayerAdapter[T]) SetGame(game ICardGame[any]) {
+	p.game = game
 }
 
-func (p *PlayerAdapter) TakeTurnUno() {
-	topCard := p.uno.tableTopCard()
+func (p *PlayerAdapter[T]) GetGame() ICardGame[any] {
+	return p.game
+}
+
+func (p *PlayerAdapter[T]) TakeTurnUno() {
+	topCard := p.game.tableTopCard()
 	fmt.Println(fmt.Sprintf("topCard %v", topCard.translate()))
 	for i, card := range p.GetHand().cards {
 		if p.compareCard(topCard, card) {
@@ -145,15 +145,15 @@ func (p *PlayerAdapter) TakeTurnUno() {
 			return
 		}
 	}
-	if p.uno.desk.Size() == 0 {
-		for _, c := range p.uno.pool.cards {
-			p.uno.desk.Push(c)
+	if p.game.GetDesk().Size() == 0 {
+		for _, c := range p.game.GetPool().cards {
+			p.game.GetDesk().Push(c)
 		}
-		p.uno.desk.Shuffle()
-		p.uno.pool.cards = nil
-		p.uno.pool.Push(topCard)
+		p.game.GetDesk().Shuffle()
+		p.game.GetPool().cards = nil
+		p.game.GetPool().Push(topCard)
 	}
-	card := p.uno.desk.DrawCard()
+	card := p.game.GetDesk().DrawCard()
 	fmt.Println(fmt.Sprintf("抽卡 %v", card.translate()))
 	// 抽卡判斷可以出
 	if p.compareCard(topCard, card) {
@@ -163,10 +163,10 @@ func (p *PlayerAdapter) TakeTurnUno() {
 	return
 }
 
-func (p *PlayerAdapter) compareCard(topCard *Card, card *Card) bool {
+func (p *PlayerAdapter[T]) compareCard(topCard *Card, card *Card) bool {
 	if topCard.color == card.color || topCard.number == card.number {
 		fmt.Println(fmt.Sprintf("出牌 %v", card.translate()))
-		p.uno.pool.Push(card)
+		p.game.GetPool().Push(card)
 		return true
 	}
 	return false

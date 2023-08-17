@@ -3,7 +3,7 @@ package common
 import "fmt"
 
 type AI struct {
-	PlayerAdapter
+	PlayerAdapter[any]
 }
 
 func (h *AI) NameHimself(i int) {

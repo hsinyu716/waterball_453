@@ -6,7 +6,7 @@ import (
 )
 
 type Human struct {
-	PlayerAdapter
+	PlayerAdapter[any]
 }
 
 func (h *Human) NameHimself(i int) {
