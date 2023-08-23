@@ -1,6 +1,6 @@
-package common
+package card
 
 type Card interface {
-	Translate() string
 	GenerateDeck() []Card
+	Translate() string
 }

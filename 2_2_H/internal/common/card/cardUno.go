@@ -1,4 +1,4 @@
-package common
+package card
 
 import (
 	"fmt"
@@ -14,16 +14,11 @@ type ICardUno interface {
 	setNumber(number NumberEnumType)
 	getColor() ColorEnumType
 	getNumber() NumberEnumType
-	CompareCard(topCard CardUno) bool
 }
 
 func NewCardUno() Card {
 	card := CardUno{}
 	return &card
-}
-
-func (c *CardUno) Translate() string {
-	return fmt.Sprintf("%s %d", colors[c.getColor()], c.getNumber()+1)
 }
 
 func (c *CardUno) GenerateDeck() []Card {
@@ -36,6 +31,10 @@ func (c *CardUno) GenerateDeck() []Card {
 		}
 	}
 	return cards
+}
+
+func (c *CardUno) Translate() string {
+	return fmt.Sprintf("%s %d", colors[c.getColor()], c.getNumber()+1)
 }
 
 func (c *CardUno) CompareCard(topCard Card) bool {

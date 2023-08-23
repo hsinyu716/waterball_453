@@ -1,85 +1,74 @@
 package common
 
 import (
+	"cosmos.cards.showdown/internal/common/card"
 	"fmt"
 )
 
 const HandCardNumber = 5
 
-type GameUno struct {
-	CardGame[*GameUno]
+type Uno struct {
+	CardGame
 	players []IPlayer
 }
 
-func NewGameUno(players *[]IPlayer) *GameUno {
-	return &GameUno{
-		CardGame: CardGame[*GameUno]{
-			Desk:  NewDesk(NewCardUno().GenerateDeck()),
-			Trash: NewDesk([]Card{}),
+func NewGameUno(players *[]IPlayer) *Uno {
+	return &Uno{
+		CardGame: CardGame{
+			desk:  NewDesk(card.NewCardUno().GenerateDeck()),
+			trash: NewDesk([]card.Card{}),
 		},
 		players: *players,
 	}
 }
 
-//func (u *CardUno) Start() {
-//	u.nameThemselves()
-//	u.GetDesk().Shuffle()
-//	u.drawHand()
-//
-//	u.showTable()
-//
-//	u.playRound()
-//	u.gameOver()
-//}
-
-func (g *GameUno) GetPlayers() []IPlayer {
+func (g *Uno) GetPlayers() []IPlayer {
 	return g.players
 }
 
-func (g *GameUno) GetDesk() *Desk {
-	return g.Desk
+func (g *Uno) GetDesk() *Desk {
+	return g.desk
 }
 
-func (g *GameUno) GetTrash() *Desk {
-	return g.Trash
+func (g *Uno) GetTrash() *Desk {
+	return g.trash
 }
 
-func (g *GameUno) drawHand() {
-	size := g.Desk.Size()
+func (g *Uno) drawHand() {
+	size := g.desk.Size()
 	for i := 0; i < size; i++ {
 		if i == len(g.players)*HandCardNumber {
 			break
 		}
-		card := g.Desk.DrawCard()
-		g.players[i%4].AddHandCard(card)
+		card0 := g.desk.DrawCard()
+		g.players[i%4].AddHandCard(card0)
 	}
 }
 
-func (g *GameUno) showTable() {
-	card := g.Desk.DrawCard()
-	g.Trash.Push(card)
-	fmt.Println(fmt.Sprintf("First card is %v", card.Translate()))
+func (g *Uno) showTable() {
+	card0 := g.desk.DrawCard()
+	g.trash.Push(card0)
+	fmt.Println(fmt.Sprintf("First card is %v", card0.Translate()))
 }
 
-func (g *GameUno) playRound() {
+func (g *Uno) playRound() {
 	i := 0
-	for {
+	end := false
+	for !end {
 		fmt.Println(fmt.Sprintf("ROUND %d", i+1))
 		for _, player := range g.GetPlayers() {
 			g.takeTurn(player)
-			if player.GetCardSize() == 0 {
-				return
-			}
+			end = player.GetCardSize() == 0
 		}
 		i++
 	}
 }
 
-func (g *GameUno) tableTopCard() Card {
-	return g.Trash.TopCard()
+func (g *Uno) tableTopCard() card.Card {
+	return g.trash.TopCard()
 }
 
-func (g *GameUno) takeTurn(player IPlayer) {
+func (g *Uno) takeTurn(player IPlayer) {
 	fmt.Println(fmt.Sprintf("It's (%s)'s turn", player.GetName()))
 	player.TakeTurnUno()
 	if player.GetCardSize() == 1 {
@@ -87,7 +76,7 @@ func (g *GameUno) takeTurn(player IPlayer) {
 	}
 }
 
-func (g *GameUno) compareToWinner() IPlayer {
+func (g *Uno) compareToWinner() IPlayer {
 	players := g.GetPlayers()
 	winner := players[0]
 	for _, player := range players {

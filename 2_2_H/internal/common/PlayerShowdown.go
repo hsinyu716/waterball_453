@@ -21,36 +21,36 @@ type IPlayerShowdown interface {
 	GetPoint() int
 }
 
-func (p *PlayerAdapter[T]) TakeTurn() *TurnMove {
+func (p *PlayerAdapter) TakeTurn() *TurnMove {
 	turnMove := NewTurnMove(p, nil, nil)
 	return turnMove
 }
 
-func (p *PlayerAdapter[T]) MakeExchangeHandsDecision() *ExchangeHands {
+func (p *PlayerAdapter) MakeExchangeHandsDecision() *ExchangeHands {
 	return nil
 }
 
-func (p *PlayerAdapter[T]) HasUsedExchangeHands() bool {
+func (p *PlayerAdapter) HasUsedExchangeHands() bool {
 	return p.exchangeHands != nil
 }
 
-func (p *PlayerAdapter[T]) GetExchangeHands() *ExchangeHands {
+func (p *PlayerAdapter) GetExchangeHands() *ExchangeHands {
 	return p.exchangeHands
 }
 
-func (p *PlayerAdapter[T]) SetExchangeHands(exchangeHands *ExchangeHands) {
+func (p *PlayerAdapter) SetExchangeHands(exchangeHands *ExchangeHands) {
 	p.exchangeHands = exchangeHands
 }
 
-func (p *PlayerAdapter[T]) GainPoint() {
+func (p *PlayerAdapter) GainPoint() {
 	p.point++
 }
 
-func (p *PlayerAdapter[T]) GetPoint() int {
+func (p *PlayerAdapter) GetPoint() int {
 	return p.point
 }
 
-func (p *PlayerAdapter[T]) filterOtherPlayer() []IPlayer {
+func (p *PlayerAdapter) filterOtherPlayer() []IPlayer {
 	var selectPlayers []IPlayer
 	for _, player := range p.game.GetPlayers() {
 		if p.name != player.GetName() {
@@ -60,7 +60,7 @@ func (p *PlayerAdapter[T]) filterOtherPlayer() []IPlayer {
 	return selectPlayers
 }
 
-func (p *PlayerAdapter[T]) selectExchangeHandsTarget(players []IPlayer) *ExchangeHands {
+func (p *PlayerAdapter) selectExchangeHandsTarget(players []IPlayer) *ExchangeHands {
 	printPlayerChoices(players)
 	input, err := reader.ReadString('\n')
 	if err != nil {

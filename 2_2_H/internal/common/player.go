@@ -2,17 +2,17 @@ package common
 
 import (
 	"bufio"
+	"cosmos.cards.showdown/internal/common/card"
 	"fmt"
 	"os"
 )
 
 var reader = bufio.NewReader(os.Stdin)
 
-type PlayerAdapter[T any] struct {
-	name     string
-	showdown *Showdown
-	hand     *Hand
-	game     ICardGame[T]
+type PlayerAdapter struct {
+	name string
+	hand *Hand
+	game ICardGame
 
 	PlayerShowdown
 }
@@ -20,50 +20,50 @@ type PlayerAdapter[T any] struct {
 type IPlayer interface {
 	NameHimself(i int)
 	SetHand(hand *Hand)
-	AddHandCard(card Card)
+	AddHandCard(card card.Card)
 	GetHand() *Hand
-	ShowCard(index int) Card
+	ShowCard(index int) card.Card
 	GetName() string
 	GetCardSize() int
-	SetGame(game ICardGame[any])
-	GetGame() ICardGame[any]
+	SetGame(game ICardGame)
+	GetGame() ICardGame
 
 	IPlayerUno
 	IPlayerShowdown
 }
 
-func (p *PlayerAdapter[T]) NameHimself(i int) {
+func (p *PlayerAdapter) NameHimself(i int) {
 	p.name = fmt.Sprintf("AI random %d", i)
 }
 
-func (p *PlayerAdapter[T]) SetHand(hand *Hand) {
+func (p *PlayerAdapter) SetHand(hand *Hand) {
 	p.hand = hand
 }
 
-func (p *PlayerAdapter[T]) AddHandCard(card Card) {
+func (p *PlayerAdapter) AddHandCard(card card.Card) {
 	p.hand.AddCard(card)
 }
 
-func (p *PlayerAdapter[T]) GetHand() *Hand {
+func (p *PlayerAdapter) GetHand() *Hand {
 	return p.hand
 }
 
-func (p *PlayerAdapter[T]) ShowCard(index int) Card {
+func (p *PlayerAdapter) ShowCard(index int) card.Card {
 	return p.GetHand().Show(index)
 }
 
-func (p *PlayerAdapter[T]) GetName() string {
+func (p *PlayerAdapter) GetName() string {
 	return p.name
 }
 
-func (p *PlayerAdapter[T]) GetCardSize() int {
-	return len(p.GetHand().cards)
+func (p *PlayerAdapter) GetCardSize() int {
+	return len(p.GetHand().Cards)
 }
 
-func (p *PlayerAdapter[T]) SetGame(game ICardGame[any]) {
+func (p *PlayerAdapter) SetGame(game ICardGame) {
 	p.game = game
 }
 
-func (p *PlayerAdapter[T]) GetGame() ICardGame[any] {
+func (p *PlayerAdapter) GetGame() ICardGame {
 	return p.game
 }

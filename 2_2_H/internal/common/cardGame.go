@@ -1,17 +1,14 @@
 package common
 
 import (
+	"cosmos.cards.showdown/internal/common/card"
 	"fmt"
 )
 
-type GameType interface {
-	*CardUno | *Showdown
-}
-
-type ICardGame[T any] interface {
-	nameThemselves()
+type ICardGame interface {
+	NameThemselves()
 	Start()
-	tableTopCard() Card
+	tableTopCard() card.Card
 	GetDesk() *Desk
 	GetTrash() *Desk
 	SetPlayers(p []IPlayer)
@@ -23,20 +20,20 @@ type ICardGame[T any] interface {
 	compareToWinner() IPlayer
 }
 
-type CardGame[T any] struct {
-	game  ICardGame[T]
-	Trash *Desk
-	Desk  *Desk
+type CardGame struct {
+	game  ICardGame
+	trash *Desk
+	desk  *Desk
 }
 
-func NewCardGame[T any](game ICardGame[T]) *CardGame[T] {
-	return &CardGame[T]{
+func NewCardGame(game ICardGame) *CardGame {
+	return &CardGame{
 		game: game,
 	}
 }
 
-func (c *CardGame[T]) Start() {
-	c.nameThemselves()
+func (c *CardGame) Start() {
+	c.NameThemselves()
 	c.GetDesk().Shuffle()
 	c.drawHand()
 
@@ -46,27 +43,27 @@ func (c *CardGame[T]) Start() {
 	c.gameOver()
 }
 
-func (c *CardGame[T]) GetDesk() *Desk {
+func (c *CardGame) GetDesk() *Desk {
 	return c.game.GetDesk()
 }
 
-func (c *CardGame[T]) GetTrash() *Desk {
+func (c *CardGame) GetTrash() *Desk {
 	return c.game.GetTrash()
 }
 
-func (c *CardGame[T]) SetPlayers(p []IPlayer) {
+func (c *CardGame) SetPlayers(p []IPlayer) {
 	c.game.SetPlayers(p)
 }
 
-func (c *CardGame[T]) GetPlayers() []IPlayer {
+func (c *CardGame) GetPlayers() []IPlayer {
 	return c.game.GetPlayers()
 }
 
-func (c *CardGame[T]) tableTopCard() Card {
+func (c *CardGame) tableTopCard() card.Card {
 	return c.GetTrash().TopCard()
 }
 
-func (c *CardGame[T]) nameThemselves() {
+func (c *CardGame) NameThemselves() {
 	for i, p := range c.GetPlayers() {
 		p.SetGame(c.game)
 		p.NameHimself(i + 1)
@@ -74,27 +71,27 @@ func (c *CardGame[T]) nameThemselves() {
 	}
 }
 
-func (c *CardGame[T]) drawHand() {
+func (c *CardGame) drawHand() {
 	c.game.drawHand()
 }
 
-func (c *CardGame[T]) showTable() {
+func (c *CardGame) showTable() {
 	c.game.showTable()
 }
 
-func (c *CardGame[T]) playRound() {
+func (c *CardGame) playRound() {
 	c.game.playRound()
 }
 
-func (c *CardGame[T]) takeTurn(player IPlayer) {
+func (c *CardGame) takeTurn(player IPlayer) {
 	c.game.takeTurn(player)
 }
 
-func (c *CardGame[T]) compareToWinner() IPlayer {
+func (c *CardGame) compareToWinner() IPlayer {
 	return c.game.compareToWinner()
 }
 
-func (c *CardGame[T]) gameOver() {
+func (c *CardGame) gameOver() {
 	var winner IPlayer
 	winner = c.compareToWinner()
 	fmt.Println(fmt.Sprintf("The winner is %s.\n", winner.GetName()))
