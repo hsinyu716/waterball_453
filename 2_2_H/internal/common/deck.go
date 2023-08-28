@@ -5,18 +5,18 @@ import (
 	"math/rand"
 )
 
-type Desk struct {
+type Deck struct {
 	Cards []card.Card
 }
 
-func NewDesk(cards []card.Card) *Desk {
-	desk := &Desk{
+func NewDeck(cards []card.Card) *Deck {
+	deck := &Deck{
 		cards,
 	}
-	return desk
+	return deck
 }
 
-type IDesk interface {
+type IDeck interface {
 	Push(card card.Card)
 	Shuffle()
 	DrawCard() card.Card
@@ -24,25 +24,25 @@ type IDesk interface {
 	TopCard() card.Card
 }
 
-func (d *Desk) Push(card0 card.Card) {
+func (d *Deck) Push(card0 card.Card) {
 	d.Cards = append([]card.Card{card0}, d.Cards...)
 }
 
-func (d *Desk) Shuffle() {
+func (d *Deck) Shuffle() {
 	rand.Shuffle(len(d.Cards), func(i, j int) { d.Cards[i], d.Cards[j] = d.Cards[j], d.Cards[i] })
 }
 
-func (d *Desk) DrawCard() card.Card {
+func (d *Deck) DrawCard() card.Card {
 	card0 := d.Cards[0]
 	d.Cards = d.Cards[1:]
 	return card0
 }
 
-func (d *Desk) Size() int {
+func (d *Deck) Size() int {
 	return len(d.Cards)
 }
 
-func (d *Desk) TopCard() card.Card {
+func (d *Deck) TopCard() card.Card {
 	card0 := d.Cards[0]
 	return card0
 }

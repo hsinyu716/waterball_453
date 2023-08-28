@@ -5,58 +5,59 @@ import (
 	"fmt"
 )
 
-type ICardGame interface {
+type ICardGameStrategy interface {
 	NameThemselves()
-	Start()
 	tableTopCard() card.Card
-	GetDesk() *Desk
-	GetTrash() *Desk
+	GetDeck() *Deck
+	GetTrash() *Deck
 	SetPlayers(p []IPlayer)
 	GetPlayers() []IPlayer
 	drawHand()
 	showTable()
 	takeTurn(player IPlayer)
 	playRound()
+	winnerInRound()
+	checkOver(i int, player IPlayer) (bool, bool)
 	compareToWinner() IPlayer
+	checkWinner(winner, player IPlayer) bool
+	cleanTurn()
+	getHandLimit() int
 }
 
 type CardGame struct {
-	game  ICardGame
-	trash *Desk
-	desk  *Desk
+	gameStrategy ICardGameStrategy
+	trash        *Deck
+	deck         *Deck
+	players      []IPlayer
 }
 
-func NewCardGame(game ICardGame) *CardGame {
+func NewCardGame(game ICardGameStrategy) *CardGame {
 	return &CardGame{
-		game: game,
+		gameStrategy: game,
 	}
 }
 
 func (c *CardGame) Start() {
 	c.NameThemselves()
-	c.GetDesk().Shuffle()
+	c.gameStrategy.GetDeck().Shuffle()
 	c.drawHand()
 
-	c.showTable()
+	c.gameStrategy.showTable()
 
 	c.playRound()
 	c.gameOver()
 }
 
-func (c *CardGame) GetDesk() *Desk {
-	return c.game.GetDesk()
-}
-
-func (c *CardGame) GetTrash() *Desk {
-	return c.game.GetTrash()
+func (c *CardGame) GetTrash() *Deck {
+	return c.gameStrategy.GetTrash()
 }
 
 func (c *CardGame) SetPlayers(p []IPlayer) {
-	c.game.SetPlayers(p)
+	c.gameStrategy.SetPlayers(p)
 }
 
 func (c *CardGame) GetPlayers() []IPlayer {
-	return c.game.GetPlayers()
+	return c.gameStrategy.GetPlayers()
 }
 
 func (c *CardGame) tableTopCard() card.Card {
@@ -65,34 +66,59 @@ func (c *CardGame) tableTopCard() card.Card {
 
 func (c *CardGame) NameThemselves() {
 	for i, p := range c.GetPlayers() {
-		p.SetGame(c.game)
-		p.NameHimself(i + 1)
+		p.SetGame(c.gameStrategy)
+		p.SetName(p.NameHimself(i + 1))
 		p.SetHand(NewHand(p.GetName()))
 	}
 }
 
 func (c *CardGame) drawHand() {
-	c.game.drawHand()
-}
-
-func (c *CardGame) showTable() {
-	c.game.showTable()
+	size := c.gameStrategy.GetDeck().Size()
+	for i := 0; i < size; i++ {
+		card0 := c.gameStrategy.GetDeck().DrawCard()
+		if c.gameStrategy.GetPlayers()[i%4].GetCardSize() > c.gameStrategy.getHandLimit() {
+			break
+		}
+		c.gameStrategy.GetPlayers()[i%4].AddHandCard(card0)
+	}
 }
 
 func (c *CardGame) playRound() {
-	c.game.playRound()
+	i := 0
+	end := false
+	breakLoop := false
+	for !end {
+		fmt.Println(fmt.Sprintf("ROUND %d", i+1))
+		for _, player := range c.GetPlayers() {
+			c.takeTurn(player)
+			end, breakLoop = c.gameStrategy.checkOver(i, player)
+			if end && breakLoop {
+				break
+			}
+		}
+		c.gameStrategy.winnerInRound()
+		c.gameStrategy.cleanTurn()
+		i++
+	}
 }
 
 func (c *CardGame) takeTurn(player IPlayer) {
-	c.game.takeTurn(player)
-}
-
-func (c *CardGame) compareToWinner() IPlayer {
-	return c.game.compareToWinner()
+	c.gameStrategy.takeTurn(player)
 }
 
 func (c *CardGame) gameOver() {
 	var winner IPlayer
 	winner = c.compareToWinner()
 	fmt.Println(fmt.Sprintf("The winner is %s.\n", winner.GetName()))
+}
+
+func (c *CardGame) compareToWinner() IPlayer {
+	players := c.GetPlayers()
+	winner := players[0]
+	for _, player := range players {
+		if c.gameStrategy.checkWinner(winner, player) {
+			winner = player
+		}
+	}
+	return winner
 }

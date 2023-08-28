@@ -9,15 +9,15 @@ const RoundNum = 13
 
 type Showdown struct {
 	CardGame
-	desk      *Desk
-	players   []IPlayer
 	turnMoves []*TurnMove
 }
 
 func NewShowdown(players *[]IPlayer) *Showdown {
 	return &Showdown{
-		desk:    NewDesk(card.NewCardShowdown().GenerateDeck()),
-		players: *players,
+		CardGame: CardGame{
+			deck:    NewDeck(card.NewCardShowdown().InitDeck()),
+			players: *players,
+		},
 	}
 }
 
@@ -25,30 +25,12 @@ func (s *Showdown) GetPlayers() []IPlayer {
 	return s.players
 }
 
-func (s *Showdown) GetDesk() *Desk {
-	return s.desk
+func (s *Showdown) GetDeck() *Deck {
+	return s.deck
 }
 
-func (s *Showdown) drawHand() {
-	size := s.desk.Size()
-	for i := 0; i < size; i++ {
-		card0 := s.desk.DrawCard()
-		if s.players[i%4].GetCardSize() > 13 {
-			panic("over 13")
-		}
-		s.players[i%4].AddHandCard(card0)
-	}
-}
-
-func (s *Showdown) playRound() {
-	for i := 0; i < RoundNum; i++ {
-		fmt.Println(fmt.Sprintf("ROUND %d", i+1))
-		for _, player := range s.players {
-			s.takeTurn(player)
-		}
-		s.showdown()
-		s.turnMoves = nil
-	}
+func (s *Showdown) getHandLimit() int {
+	return RoundNum
 }
 
 func (s *Showdown) takeTurn(player IPlayer) {
@@ -57,7 +39,15 @@ func (s *Showdown) takeTurn(player IPlayer) {
 	s.turnMoves = append(s.turnMoves, turnMove)
 }
 
-func (s *Showdown) showdown() {
+func (s *Showdown) checkWinner(winner, player IPlayer) bool {
+	return winner.GetPoint() > player.GetPoint()
+}
+
+func (s *Showdown) checkOver(i int, _ IPlayer) (bool, bool) {
+	return i == RoundNum-1, false
+}
+
+func (s *Showdown) winnerInRound() {
 	s.printShowCards()
 	winnerTurnMove := s.compareToTurn()
 	winner := winnerTurnMove.GetPlayer()
@@ -78,8 +68,8 @@ func (s *Showdown) printShowCards() {
 func (s *Showdown) compareToTurn() *TurnMove {
 	winnerTurnMove := s.turnMoves[0]
 	for _, move := range s.turnMoves {
-		moveCard := move.GetShowCard().(*card.CardShowdown)
-		winnerCard := winnerTurnMove.GetShowCard().(*card.CardShowdown)
+		moveCard := move.GetShowCard().(*card.Showdown)
+		winnerCard := winnerTurnMove.GetShowCard().(*card.Showdown)
 		if moveCard.GetRank() > winnerCard.GetRank() {
 			winnerTurnMove = move
 		} else if winnerCard.GetRank() == moveCard.GetRank() {
@@ -91,15 +81,8 @@ func (s *Showdown) compareToTurn() *TurnMove {
 	return winnerTurnMove
 }
 
-func (s *Showdown) compareToWinner() IPlayer {
-	players := s.GetPlayers()
-	winner := players[0]
-	for _, player := range players {
-		if winner.GetPoint() > player.GetPoint() {
-			winner = player
-		}
-	}
-	return winner
+func (s *Showdown) cleanTurn() {
+	s.turnMoves = nil
 }
 
 func (s *Showdown) showTable() {

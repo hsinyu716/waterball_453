@@ -1,6 +1,6 @@
 package card
 
 type Card interface {
-	GenerateDeck() []Card
+	InitDeck() []Card
 	Translate() string
 }

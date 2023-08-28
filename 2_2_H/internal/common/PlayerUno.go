@@ -1,7 +1,7 @@
 package common
 
 import (
-	card2 "cosmos.cards.showdown/internal/common/card"
+	"cosmos.cards.showdown/internal/common/card"
 	"fmt"
 )
 
@@ -12,28 +12,27 @@ type IPlayerUno interface {
 func (p *PlayerAdapter) TakeTurnUno() {
 	topCard := p.game.tableTopCard()
 	fmt.Println(fmt.Sprintf("topCard %v", topCard.Translate()))
-	for i, card := range p.GetHand().Cards {
-		if card.(*card2.CardUno).CompareCard(topCard) {
+	for i, card0 := range p.GetHand().Cards {
+		if card0.(*card.Uno).CompareCard(topCard) {
 			p.ShowCard(i)
-			p.game.GetTrash().Push(card)
+			p.game.GetTrash().Push(card0)
 			return
 		}
 	}
-	if p.game.GetDesk().Size() == 0 {
-		for _, c := range p.game.GetTrash().Cards {
-			p.game.GetDesk().Push(c)
-		}
-		p.game.GetDesk().Shuffle()
+	if p.game.GetDeck().Size() == 0 {
+		fmt.Println("牌堆沒牌，由棄牌區重洗！！！")
+		p.game.GetDeck().Cards = p.game.GetTrash().Cards
 		p.game.GetTrash().Cards = nil
+		p.game.GetDeck().Shuffle()
 		p.game.GetTrash().Push(topCard)
 	}
-	card := p.game.GetDesk().DrawCard().(*card2.CardUno)
-	fmt.Println(fmt.Sprintf("抽卡 %v", card.Translate()))
+	card0 := p.game.GetDeck().DrawCard().(*card.Uno)
+	fmt.Println(fmt.Sprintf("抽卡 %v", card0.Translate()))
 	// 抽卡判斷可以出
-	if card.CompareCard(topCard) {
-		p.game.GetTrash().Push(card)
+	if card0.CompareCard(topCard) {
+		p.game.GetTrash().Push(card0)
 		return
 	}
-	p.AddHandCard(card)
+	p.AddHandCard(card0)
 	return
 }

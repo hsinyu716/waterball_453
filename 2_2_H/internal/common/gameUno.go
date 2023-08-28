@@ -9,66 +9,49 @@ const HandCardNumber = 5
 
 type Uno struct {
 	CardGame
-	players []IPlayer
 }
 
 func NewGameUno(players *[]IPlayer) *Uno {
 	return &Uno{
 		CardGame: CardGame{
-			desk:  NewDesk(card.NewCardUno().GenerateDeck()),
-			trash: NewDesk([]card.Card{}),
+			deck:    NewDeck(card.NewCardUno().InitDeck()),
+			trash:   NewDeck([]card.Card{}),
+			players: *players,
 		},
-		players: *players,
 	}
 }
 
-func (g *Uno) GetPlayers() []IPlayer {
-	return g.players
+func (u *Uno) GetPlayers() []IPlayer {
+	return u.players
 }
 
-func (g *Uno) GetDesk() *Desk {
-	return g.desk
+func (u *Uno) GetDeck() *Deck {
+	return u.deck
 }
 
-func (g *Uno) GetTrash() *Desk {
-	return g.trash
+func (u *Uno) GetTrash() *Deck {
+	return u.trash
 }
 
-func (g *Uno) drawHand() {
-	size := g.desk.Size()
-	for i := 0; i < size; i++ {
-		if i == len(g.players)*HandCardNumber {
-			break
-		}
-		card0 := g.desk.DrawCard()
-		g.players[i%4].AddHandCard(card0)
-	}
+func (u *Uno) getHandLimit() int {
+	return HandCardNumber
 }
 
-func (g *Uno) showTable() {
-	card0 := g.desk.DrawCard()
-	g.trash.Push(card0)
+func (u *Uno) showTable() {
+	card0 := u.deck.DrawCard()
+	u.trash.Push(card0)
 	fmt.Println(fmt.Sprintf("First card is %v", card0.Translate()))
 }
 
-func (g *Uno) playRound() {
-	i := 0
-	end := false
-	for !end {
-		fmt.Println(fmt.Sprintf("ROUND %d", i+1))
-		for _, player := range g.GetPlayers() {
-			g.takeTurn(player)
-			end = player.GetCardSize() == 0
-		}
-		i++
-	}
+func (u *Uno) checkOver(_ int, player IPlayer) (bool, bool) {
+	return player.GetCardSize() == 0, true
 }
 
-func (g *Uno) tableTopCard() card.Card {
-	return g.trash.TopCard()
+func (u *Uno) tableTopCard() card.Card {
+	return u.trash.TopCard()
 }
 
-func (g *Uno) takeTurn(player IPlayer) {
+func (u *Uno) takeTurn(player IPlayer) {
 	fmt.Println(fmt.Sprintf("It's (%s)'s turn", player.GetName()))
 	player.TakeTurnUno()
 	if player.GetCardSize() == 1 {
@@ -76,8 +59,8 @@ func (g *Uno) takeTurn(player IPlayer) {
 	}
 }
 
-func (g *Uno) compareToWinner() IPlayer {
-	players := g.GetPlayers()
+func (u *Uno) compareToWinner() IPlayer {
+	players := u.GetPlayers()
 	winner := players[0]
 	for _, player := range players {
 		if player.GetCardSize() == 0 {
@@ -85,4 +68,16 @@ func (g *Uno) compareToWinner() IPlayer {
 		}
 	}
 	return winner
+}
+
+func (u *Uno) checkWinner(_, player IPlayer) bool {
+	return player.GetCardSize() == 0
+}
+
+func (u *Uno) cleanTurn() {
+	// do nothing
+}
+
+func (u *Uno) winnerInRound() {
+	// do nothing
 }

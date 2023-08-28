@@ -1,39 +1,40 @@
 package common
 
 import (
-	"bufio"
 	"cosmos.cards.showdown/internal/common/card"
 	"fmt"
-	"os"
 )
-
-var reader = bufio.NewReader(os.Stdin)
 
 type PlayerAdapter struct {
 	name string
 	hand *Hand
-	game ICardGame
+	game ICardGameStrategy
 
 	PlayerShowdown
 }
 
 type IPlayer interface {
-	NameHimself(i int)
+	NameHimself(i int) string
 	SetHand(hand *Hand)
 	AddHandCard(card card.Card)
 	GetHand() *Hand
 	ShowCard(index int) card.Card
 	GetName() string
+	SetName(name string)
 	GetCardSize() int
-	SetGame(game ICardGame)
-	GetGame() ICardGame
+	SetGame(game ICardGameStrategy)
+	GetGame() ICardGameStrategy
 
 	IPlayerUno
 	IPlayerShowdown
 }
 
-func (p *PlayerAdapter) NameHimself(i int) {
-	p.name = fmt.Sprintf("AI random %d", i)
+func (p *PlayerAdapter) NameHimself(i int) string {
+	return fmt.Sprintf("AI name %d", i)
+}
+
+func (p *PlayerAdapter) SetName(name string) {
+	p.name = name
 }
 
 func (p *PlayerAdapter) SetHand(hand *Hand) {
@@ -60,10 +61,10 @@ func (p *PlayerAdapter) GetCardSize() int {
 	return len(p.GetHand().Cards)
 }
 
-func (p *PlayerAdapter) SetGame(game ICardGame) {
+func (p *PlayerAdapter) SetGame(game ICardGameStrategy) {
 	p.game = game
 }
 
-func (p *PlayerAdapter) GetGame() ICardGame {
+func (p *PlayerAdapter) GetGame() ICardGameStrategy {
 	return p.game
 }

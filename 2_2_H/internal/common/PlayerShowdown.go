@@ -1,10 +1,14 @@
 package common
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 )
+
+var reader = bufio.NewReader(os.Stdin)
 
 type PlayerShowdown struct {
 	point         int
@@ -50,7 +54,7 @@ func (p *PlayerAdapter) GetPoint() int {
 	return p.point
 }
 
-func (p *PlayerAdapter) filterOtherPlayer() []IPlayer {
+func (p *PlayerAdapter) FilterOtherPlayer() []IPlayer {
 	var selectPlayers []IPlayer
 	for _, player := range p.game.GetPlayers() {
 		if p.name != player.GetName() {
@@ -60,7 +64,7 @@ func (p *PlayerAdapter) filterOtherPlayer() []IPlayer {
 	return selectPlayers
 }
 
-func (p *PlayerAdapter) selectExchangeHandsTarget(players []IPlayer) *ExchangeHands {
+func (p *PlayerAdapter) SelectExchangeHandsTarget(players []IPlayer) *ExchangeHands {
 	printPlayerChoices(players)
 	input, err := reader.ReadString('\n')
 	if err != nil {
@@ -69,7 +73,7 @@ func (p *PlayerAdapter) selectExchangeHandsTarget(players []IPlayer) *ExchangeHa
 	input = strings.TrimSuffix(input, "\n")
 	targetIndex, err := strconv.Atoi(input)
 	if targetIndex >= len(players) || targetIndex < 0 {
-		return p.selectExchangeHandsTarget(players)
+		return p.SelectExchangeHandsTarget(players)
 	}
 	exchangeHands := NewExchangeHands(p, players[targetIndex])
 	return exchangeHands

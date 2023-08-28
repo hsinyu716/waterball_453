@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-type CardShowdown struct {
+type Showdown struct {
 	rank RankEnumType
 	suit SuitEnumType
 }
@@ -17,40 +17,40 @@ type ICardShowdown interface {
 }
 
 func NewCardShowdown() Card {
-	card := CardShowdown{}
+	card := Showdown{}
 	return &card
 }
 
-func (c *CardShowdown) GenerateDeck() []Card {
+func (s *Showdown) InitDeck() []Card {
 	suit := []SuitEnumType{SUITClub, SUITDiamond, SUITHeart, SUITSpade}
 	rank := []RankEnumType{RANKTwo, RANKThree, RANKFore, RANKFive, RANKSix, RANKSeven, RANKEight, RANKNine, RANKTen, RANKJack, RANKQueen, RANKKing, RANKAce}
 	var cards []Card
-	for _, s := range suit {
+	for _, su := range suit {
 		for _, r := range rank {
-			cards = append(cards, &CardShowdown{r, s})
+			cards = append(cards, &Showdown{r, su})
 		}
 	}
 	return cards
 }
 
-func (c *CardShowdown) Translate() string {
-	return fmt.Sprintf("%s %s", suits[c.GetSuit()], ranks[c.GetRank()])
+func (s *Showdown) Translate() string {
+	return fmt.Sprintf("%s %s", suits[s.GetSuit()], ranks[s.GetRank()])
 }
 
-func (c *CardShowdown) setRank(rank RankEnumType) {
-	c.rank = rank
+func (s *Showdown) setRank(rank RankEnumType) {
+	s.rank = rank
 }
 
-func (c *CardShowdown) setSuit(suit SuitEnumType) {
-	c.suit = suit
+func (s *Showdown) setSuit(suit SuitEnumType) {
+	s.suit = suit
 }
 
-func (c *CardShowdown) GetRank() RankEnumType {
-	return c.rank
+func (s *Showdown) GetRank() RankEnumType {
+	return s.rank
 }
 
-func (c *CardShowdown) GetSuit() SuitEnumType {
-	return c.suit
+func (s *Showdown) GetSuit() SuitEnumType {
+	return s.suit
 }
 
 type RankEnumType int
