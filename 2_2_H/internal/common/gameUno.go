@@ -55,7 +55,7 @@ func (u *Uno) takeTurn(player IPlayer) {
 	fmt.Println(fmt.Sprintf("It's (%s)'s turn", player.GetName()))
 	player.TakeTurnUno()
 	if player.GetCardSize() == 1 {
-		fmt.Println(fmt.Sprintf("=======%s UNO~", player.GetName()))
+		fmt.Println(fmt.Sprintf("=======%s UNO~~", player.GetName()))
 	}
 }
 

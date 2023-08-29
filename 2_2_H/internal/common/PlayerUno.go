@@ -6,17 +6,17 @@ import (
 )
 
 type IPlayerUno interface {
-	TakeTurnUno()
+	TakeTurnUno() *TurnMove
 }
 
-func (p *PlayerAdapter) TakeTurnUno() {
+func (p *PlayerAdapter) TakeTurnUno() *TurnMove {
 	topCard := p.game.tableTopCard()
 	fmt.Println(fmt.Sprintf("topCard %v", topCard.Translate()))
 	for i, card0 := range p.GetHand().Cards {
 		if card0.(*card.Uno).CompareCard(topCard) {
 			p.ShowCard(i)
 			p.game.GetTrash().Push(card0)
-			return
+			return nil
 		}
 	}
 	if p.game.GetDeck().Size() == 0 {
@@ -31,8 +31,8 @@ func (p *PlayerAdapter) TakeTurnUno() {
 	// 抽卡判斷可以出
 	if card0.CompareCard(topCard) {
 		p.game.GetTrash().Push(card0)
-		return
+		return nil
 	}
 	p.AddHandCard(card0)
-	return
+	return nil
 }
