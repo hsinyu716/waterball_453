@@ -8,27 +8,32 @@ import (
 type HeroHandler struct {
 	CollisionHandler
 	nextHandler CollisionHandler
-	typeOf      string
+	typeOf      sprite.TypeSprite
 }
 
 func NewHeroHandler(nextHandler CollisionHandler) CollisionHandler {
 	return &HeroHandler{
 		nextHandler: nextHandler,
-		typeOf:      "*sprite.Hero",
+		typeOf:      sprite.HeroSprite,
 	}
 }
 
-func (h *HeroHandler) Handle(spritesMap map[int]interface{}, from int, to int) {
+func (h *HeroHandler) Handle(spritesMap map[int]interface{}, from, to int) {
 	adapter := NewCollisionAdapter(h, h.nextHandler, h.typeOf)
 	adapter.Handling(spritesMap, from, to)
 }
 
-func (h *HeroHandler) Collision(hero sprite.ISprite, spritesMap map[int]interface{}, toSprite sprite.ISprite) (isDead bool) {
+func (h *HeroHandler) Collision(hero, toSprite sprite.ISprite, spritesMap map[int]interface{}) (isDead bool) {
 	isDead = false
-	if reflect.TypeOf(toSprite).String() == "*sprite.Water" {
+	switch reflect.TypeOf(toSprite).String() {
+	case string(sprite.WaterSprite):
+		fallthrough
+	case string(sprite.IceSprite):
 		hero.(*sprite.Hero).AddHp()
-	} else if reflect.TypeOf(toSprite).String() == "*sprite.Fire" {
+		break
+	case string(sprite.FireSprite):
 		isDead = hero.(*sprite.Hero).MinusHp()
+		break
 	}
 	if !isDead {
 		spritesMap[toSprite.GetPosition()] = hero

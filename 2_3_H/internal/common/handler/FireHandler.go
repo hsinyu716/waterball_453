@@ -9,23 +9,26 @@ import (
 type FireHandler struct {
 	CollisionHandler
 	nextHandler CollisionHandler
-	typeOf      string
+	typeOf      sprite.TypeSprite
 }
 
 func NewFireHandler(nextHandler CollisionHandler) CollisionHandler {
 	return &FireHandler{
 		nextHandler: nextHandler,
-		typeOf:      "*sprite.Fire",
+		typeOf:      sprite.FireSprite,
 	}
 }
 
-func (f *FireHandler) Handle(spritesMap map[int]interface{}, from int, to int) {
+func (f *FireHandler) Handle(spritesMap map[int]interface{}, from, to int) {
 	adapter := NewCollisionAdapter(f, f.nextHandler, f.typeOf)
 	adapter.Handling(spritesMap, from, to)
 }
 
-func (f *FireHandler) Collision(_ sprite.ISprite, _ map[int]interface{}, toSprite sprite.ISprite) (isDead bool) {
-	if reflect.TypeOf(toSprite).String() == sprite.WaterSprite {
+func (f *FireHandler) Collision(_, toSprite sprite.ISprite, _ map[int]interface{}) (isDead bool) {
+	if reflect.TypeOf(toSprite).String() == string(sprite.WaterSprite) {
+		utils.MsgPrint(utils.DataWaterFire)
+		return true
+	} else if reflect.TypeOf(toSprite).String() == string(sprite.IceSprite) {
 		utils.MsgPrint(utils.DataWaterFire)
 		return true
 	}

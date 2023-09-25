@@ -7,17 +7,17 @@ import (
 )
 
 type CollisionHandler interface {
-	Handle(spritesMap map[int]interface{}, from int, to int)
-	Collision(fromSprite sprite.ISprite, spritesMap map[int]interface{}, toSprite sprite.ISprite) bool
+	Handle(spritesMap map[int]interface{}, from, to int)
+	Collision(fromSprite, toSprite sprite.ISprite, spritesMap map[int]interface{}) bool
 }
 
 type CollisionAdapter struct {
 	handler     CollisionHandler
 	nextHandler CollisionHandler
-	typeOf      string
+	typeOf      sprite.TypeSprite
 }
 
-func NewCollisionAdapter(handler CollisionHandler, nextHandler CollisionHandler, typeOf string) *CollisionAdapter {
+func NewCollisionAdapter(handler, nextHandler CollisionHandler, typeOf sprite.TypeSprite) *CollisionAdapter {
 	return &CollisionAdapter{
 		handler:     handler,
 		nextHandler: nextHandler,
@@ -25,7 +25,7 @@ func NewCollisionAdapter(handler CollisionHandler, nextHandler CollisionHandler,
 	}
 }
 
-func (c *CollisionAdapter) Handling(spritesMap map[int]interface{}, from int, to int) {
+func (c *CollisionAdapter) Handling(spritesMap map[int]interface{}, from, to int) {
 	fromSprite := spritesMap[from].(sprite.ISprite)
 	toSprite := spritesMap[to].(sprite.ISprite)
 	if spritesMap[to] == nil {
@@ -34,25 +34,24 @@ func (c *CollisionAdapter) Handling(spritesMap map[int]interface{}, from int, to
 		spritesMap[from] = nil
 		return
 	}
-	if reflect.TypeOf(fromSprite).String() == c.typeOf {
-		c.Collision(fromSprite, spritesMap, toSprite)
+	if reflect.TypeOf(fromSprite).String() == string(c.typeOf) {
+		c.Collision(fromSprite, toSprite, spritesMap)
 		spritesMap[from] = nil
 	} else {
 		c.next(c.nextHandler, spritesMap, from, to)
 	}
 }
 
-func (c *CollisionAdapter) Collision(fromSprite sprite.ISprite, spritesMap map[int]interface{}, toSprite sprite.ISprite) bool {
+func (c *CollisionAdapter) Collision(fromSprite, toSprite sprite.ISprite, spritesMap map[int]interface{}) bool {
 	fmt.Println(fmt.Sprintf("--%v >> %v", reflect.TypeOf(fromSprite), reflect.TypeOf(toSprite)))
-	isDead := false
-	isDead = c.handler.Collision(fromSprite, spritesMap, toSprite)
+	isDead := c.handler.Collision(fromSprite, toSprite, spritesMap)
 	if isDead {
 		toSprite.Remove(&spritesMap)
 	}
 	return isDead
 }
 
-func (c *CollisionAdapter) next(handler CollisionHandler, spritesMap map[int]interface{}, from int, to int) {
+func (c *CollisionAdapter) next(handler CollisionHandler, spritesMap map[int]interface{}, from, to int) {
 	if handler != nil {
 		handler.Handle(spritesMap, from, to)
 	}

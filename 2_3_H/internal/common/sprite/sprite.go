@@ -23,8 +23,11 @@ func (s *Sprite) GetPosition() int {
 	return s.position
 }
 
+type TypeSprite string
+
 const (
-	HeroSprite  = "*sprite.Hero"
-	WaterSprite = "*sprite.Water"
-	FireSprite  = "*sprite.Fire"
+	HeroSprite  TypeSprite = "*sprite.Hero"
+	WaterSprite TypeSprite = "*sprite.Water"
+	FireSprite  TypeSprite = "*sprite.Fire"
+	IceSprite   TypeSprite = "*sprite.Ice"
 )

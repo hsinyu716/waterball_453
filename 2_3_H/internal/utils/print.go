@@ -5,10 +5,11 @@ import "fmt"
 const (
 	DataNil       = "沒有元素"
 	DataSameType  = "同類不移動"
-	DataHeroWater = "Hero 遇水補血10滴, Water消失"
+	DataHeroWater = "Hero 遇水/冰補血10滴, Water/Ice消失"
 	DataHeroFire  = "Hero 遇火失血10滴, Fire消失"
 	DataHeroDead  = "Hero 死亡"
-	DataWaterFire = "水火不容"
+	DataWaterFire = "冰水火不容"
+	DataIceFire   = "冰火不容"
 )
 
 func MsgPrint(v string) {

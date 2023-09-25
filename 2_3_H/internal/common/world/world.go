@@ -15,7 +15,7 @@ var (
 )
 
 func (w *World) Init() {
-	spritePositions := []int{1, 5, 8, 11, 12, 17, 19, 23, 24, 26}
+	spritePositions := []int{1, 4, 5, 8, 11, 12, 15, 17, 19, 23, 24, 25, 26}
 	spritesMap = make(map[int]interface{}, 30)
 
 	for _, pos := range spritePositions {
@@ -27,6 +27,8 @@ func (w *World) Init() {
 			s = sprite.NewHero(pos)
 		case 11, 17, 23, 26:
 			s = sprite.NewFire(pos)
+		case 4, 15, 25:
+			s = sprite.NewIce(pos)
 		}
 		spritesMap[pos] = s
 	}
@@ -42,7 +44,7 @@ func (w *World) Move(from int, to int) {
 	//fire.SetHandler(nil)
 
 	// CoR
-	collisionHandler := handler.NewHeroHandler(handler.NewWaterHandler(handler.NewFireHandler(nil)))
+	collisionHandler := handler.NewHeroHandler(handler.NewIceHandler(handler.NewFireHandler(handler.NewWaterHandler(nil))))
 
 	fmt.Println(spritesMap[from])
 	fmt.Println(spritesMap[to])
