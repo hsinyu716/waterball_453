@@ -7,13 +7,13 @@ import (
 )
 
 func main() {
-	sp1 := new(player.Human)
-	sp2 := new(player.AI)
-	sp3 := new(player.Human)
-	sp4 := new(player.Human)
-	showdown := common.NewShowdown(&[]common.IPlayer{sp1, sp2, sp3, sp4})
-	game0 := common.NewCardGame(showdown)
-	game0.Start()
+	//sp1 := new(player.Human)
+	//sp2 := new(player.AI)
+	//sp3 := new(player.Human)
+	//sp4 := new(player.Human)
+	//showdown := common.NewShowdown(&[]common.IPlayer{sp1, sp2, sp3, sp4})
+	//game0 := common.NewCardGame(showdown)
+	//game0.Start()
 
 	fmt.Println("===================GAME CHANGE===================")
 	p1 := new(player.Human)

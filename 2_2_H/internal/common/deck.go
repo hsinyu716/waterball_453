@@ -22,6 +22,7 @@ type IDeck interface {
 	DrawCard() card.Card
 	Size() int
 	TopCard() card.Card
+	IsEmpty() bool
 }
 
 func (d *Deck) Push(card0 card.Card) {
@@ -45,4 +46,8 @@ func (d *Deck) Size() int {
 func (d *Deck) TopCard() card.Card {
 	card0 := d.Cards[0]
 	return card0
+}
+
+func (d *Deck) IsEmpty() bool {
+	return len(d.Cards) == 0
 }

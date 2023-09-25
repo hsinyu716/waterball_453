@@ -19,13 +19,8 @@ func (p *PlayerAdapter) TakeTurnUno() *TurnMove {
 			return nil
 		}
 	}
-	if p.game.GetDeck().Size() == 0 {
-		fmt.Println("牌堆沒牌，由棄牌區重洗！！！")
-		p.game.GetDeck().Cards = p.game.GetTrash().Cards
-		p.game.GetTrash().Cards = nil
-		p.game.GetDeck().Shuffle()
-		p.game.GetTrash().Push(topCard)
-	}
+	p.isEmptyThenReShuffle(topCard)
+
 	card0 := p.game.GetDeck().DrawCard().(*card.Uno)
 	fmt.Println(fmt.Sprintf("抽卡 %v", card0.Translate()))
 	// 抽卡判斷可以出
@@ -35,4 +30,14 @@ func (p *PlayerAdapter) TakeTurnUno() *TurnMove {
 	}
 	p.AddHandCard(card0)
 	return nil
+}
+
+func (p *PlayerAdapter) isEmptyThenReShuffle(topCard card.Card) {
+	if p.game.GetDeck().IsEmpty() {
+		fmt.Println("牌堆沒牌，由棄牌區重洗！！！")
+		p.game.GetDeck().Cards = p.game.GetTrash().Cards
+		p.game.GetTrash().Cards = nil
+		p.game.GetDeck().Shuffle()
+		p.game.GetTrash().Push(topCard)
+	}
 }
