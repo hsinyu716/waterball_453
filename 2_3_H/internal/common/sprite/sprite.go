@@ -8,11 +8,11 @@ type Sprite struct {
 type ISprite interface {
 	setPosition(p int)
 	GetPosition() int
-	Remove(spritesMap *map[int]interface{})
+	Remove(spritePositions *[]ISprite)
 }
 
-func (s *Sprite) Remove(spritesMap *map[int]interface{}) {
-	(*spritesMap)[s.position] = nil
+func (s *Sprite) Remove(spritePositions *[]ISprite) {
+	(*spritePositions)[s.position] = nil
 }
 
 func (s *Sprite) setPosition(p int) {

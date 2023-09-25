@@ -18,12 +18,12 @@ func NewHeroHandler(nextHandler CollisionHandler) CollisionHandler {
 	}
 }
 
-func (h *HeroHandler) Handle(spritesMap map[int]interface{}, from, to int) {
+func (h *HeroHandler) Handle(spritePositions []sprite.ISprite, from, to int) {
 	adapter := NewCollisionAdapter(h, h.nextHandler, h.typeOf)
-	adapter.Handling(spritesMap, from, to)
+	adapter.Handling(spritePositions, from, to)
 }
 
-func (h *HeroHandler) Collision(hero, toSprite sprite.ISprite, spritesMap map[int]interface{}) (isDead bool) {
+func (h *HeroHandler) Collision(hero, toSprite sprite.ISprite, spritePositions []sprite.ISprite) (isDead bool) {
 	isDead = false
 	switch reflect.TypeOf(toSprite).String() {
 	case string(sprite.WaterSprite):
@@ -36,7 +36,7 @@ func (h *HeroHandler) Collision(hero, toSprite sprite.ISprite, spritesMap map[in
 		break
 	}
 	if !isDead {
-		spritesMap[toSprite.GetPosition()] = hero
+		spritePositions[toSprite.GetPosition()] = hero
 	}
 	return
 }

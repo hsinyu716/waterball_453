@@ -19,12 +19,12 @@ func NewIceHandler(nextHandler CollisionHandler) CollisionHandler {
 	}
 }
 
-func (f *IceHandler) Handle(spritesMap map[int]interface{}, from, to int) {
+func (f *IceHandler) Handle(spritePositions []sprite.ISprite, from, to int) {
 	adapter := NewCollisionAdapter(f, f.nextHandler, f.typeOf)
-	adapter.Handling(spritesMap, from, to)
+	adapter.Handling(spritePositions, from, to)
 }
 
-func (f *IceHandler) Collision(_, toSprite sprite.ISprite, _ map[int]interface{}) (isDead bool) {
+func (f *IceHandler) Collision(_, toSprite sprite.ISprite, _ []sprite.ISprite) (isDead bool) {
 	if reflect.TypeOf(toSprite).String() == string(sprite.WaterSprite) {
 		utils.MsgPrint(utils.DataIceFire)
 		return true

@@ -19,12 +19,12 @@ func NewWaterHandler(nextHandler CollisionHandler) CollisionHandler {
 	}
 }
 
-func (w *WaterHandler) Handle(spritesMap map[int]interface{}, from, to int) {
+func (w *WaterHandler) Handle(spritePositions []sprite.ISprite, from, to int) {
 	adapter := NewCollisionAdapter(w, w.nextHandler, w.typeOf)
-	adapter.Handling(spritesMap, from, to)
+	adapter.Handling(spritePositions, from, to)
 }
 
-func (w *WaterHandler) Collision(_, toSprite sprite.ISprite, _ map[int]interface{}) bool {
+func (w *WaterHandler) Collision(_, toSprite sprite.ISprite, _ []sprite.ISprite) bool {
 	if reflect.TypeOf(toSprite).String() == string(sprite.FireSprite) {
 		utils.MsgPrint(utils.DataWaterFire)
 		return true
