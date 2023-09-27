@@ -1,5 +1,7 @@
 package sprite
 
+import "fmt"
+
 type Sprite struct {
 	sign     string
 	position int
@@ -8,10 +10,13 @@ type Sprite struct {
 type ISprite interface {
 	setPosition(p int)
 	GetPosition() int
+	ChangePosition(p int)
 	Remove(spritePositions *[]ISprite)
+	Move(toSprite ISprite, spritePositions *[]ISprite)
 }
 
 func (s *Sprite) Remove(spritePositions *[]ISprite) {
+	fmt.Println("s.position", s.position)
 	(*spritePositions)[s.position] = nil
 }
 
@@ -23,6 +28,17 @@ func (s *Sprite) GetPosition() int {
 	return s.position
 }
 
+func (s *Sprite) ChangePosition(p int) {
+	s.position = p
+}
+
+func (s *Sprite) Move(toSprite ISprite, spritePositions *[]ISprite) {
+	position := toSprite.GetPosition()
+	(*spritePositions)[position] = s
+	s.Remove(spritePositions)
+	(*spritePositions)[position].ChangePosition(position)
+}
+
 type TypeSprite string
 
 const (
@@ -30,4 +46,22 @@ const (
 	WaterSprite TypeSprite = "*sprite.Water"
 	FireSprite  TypeSprite = "*sprite.Fire"
 	IceSprite   TypeSprite = "*sprite.Ice"
+	NilSprite   TypeSprite = "*sprite.Nil"
+)
+
+var (
+	ConflictType = []string{
+		string(FireSprite),
+		string(WaterSprite),
+		string(IceSprite),
+	}
+
+	WeakenType = []string{
+		string(FireSprite),
+	}
+
+	StrengthenType = []string{
+		string(WaterSprite),
+		string(IceSprite),
+	}
 )

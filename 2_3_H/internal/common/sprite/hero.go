@@ -4,6 +4,11 @@ import (
 	"cosmos.collision/internal/utils"
 )
 
+const (
+	initBlood = 30
+	blood     = 10
+)
+
 type Hero struct {
 	Sprite
 	hp int
@@ -14,20 +19,27 @@ func NewHero(p int) *Hero {
 		Sprite: Sprite{
 			sign: "H",
 		},
-		hp: 30,
+		hp: initBlood,
 	}
 	h.setPosition(p)
 	return h
 }
 
+func (h *Hero) Move(toSprite ISprite, spritePositions *[]ISprite) {
+	position := toSprite.GetPosition()
+	(*spritePositions)[position] = h
+	h.Remove(spritePositions)
+	(*spritePositions)[position].ChangePosition(position)
+}
+
 func (h *Hero) AddHp() {
-	h.hp += 10
-	utils.MsgPrint(utils.DataHeroWater)
+	h.hp += blood
+	utils.MsgPrint(utils.DataHeroStrengthen)
 }
 
 func (h *Hero) MinusHp() bool {
-	h.hp -= 10
-	utils.MsgPrint(utils.DataHeroFire)
+	h.hp -= blood
+	utils.MsgPrint(utils.DataHeroWeaken)
 	return h.isDead()
 }
 

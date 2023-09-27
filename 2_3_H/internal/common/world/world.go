@@ -5,18 +5,18 @@ import (
 	"cosmos.collision/internal/common/sprite"
 	"cosmos.collision/internal/utils"
 	"fmt"
-	"reflect"
 )
 
 type World struct{}
 
 var (
 	spritePositions []sprite.ISprite
+	worldLength     = 30
 )
 
 func (w *World) Init() {
 	positions := []int{1, 4, 5, 8, 11, 12, 15, 17, 19, 23, 24, 25, 26}
-	spritePositions = make([]sprite.ISprite, 30)
+	spritePositions = make([]sprite.ISprite, worldLength)
 
 	for _, pos := range positions {
 		var s sprite.ISprite
@@ -32,7 +32,15 @@ func (w *World) Init() {
 		}
 		spritePositions[pos] = s
 	}
-	fmt.Println(spritePositions)
+	w.printSprite()
+}
+
+func (w *World) printSprite() {
+	fmt.Println("=========")
+	for i, p := range spritePositions {
+		fmt.Println(i, p)
+	}
+	fmt.Println("=========")
 }
 
 func (w *World) Move(from int, to int) {
@@ -44,26 +52,21 @@ func (w *World) Move(from int, to int) {
 	//fire.SetHandler(nil)
 
 	// CoR
-	collisionHandler := handler.NewHeroHandler(handler.NewIceHandler(handler.NewFireHandler(handler.NewWaterHandler(nil))))
+	collisionHandler :=
+		handler.NewMoveToNilHandler(
+			handler.NewSameSpriteHandler(
+				handler.NewBothDisappearHandler(
+					handler.NewHeroWeakenHandler(
+						handler.NewHeroStrengthenHandler(nil)))))
 
 	fmt.Println(spritePositions[from])
 	fmt.Println(spritePositions[to])
 	if spritePositions[from] == nil {
 		utils.MsgPrint(utils.DataNil)
-		return
-	}
-	if reflect.TypeOf(spritePositions[from]) == reflect.TypeOf(spritePositions[to]) {
-		utils.MsgPrint(utils.DataSameType)
-		return
-	}
-	if spritePositions[to] == nil {
-		// TODO:討論是在這層判斷是否進到Handle 還是進Handle再判斷  可以放這  或放Handle
-		spritePositions[to] = spritePositions[from]
-		spritePositions[from] = nil
 	} else {
 		collisionHandler.Handle(spritePositions, from, to)
 	}
 	fmt.Println(from, spritePositions[from])
 	fmt.Println(to, spritePositions[to])
-	fmt.Println(spritePositions)
+	w.printSprite()
 }
