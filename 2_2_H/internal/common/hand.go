@@ -1,13 +1,15 @@
 package common
 
+import "cosmos.cards.showdown/internal/common/card"
+
 type Hand struct {
-	cards []*Card
+	Cards []card.Card
 	name  string
 }
 
 type HandService interface {
-	AddCard(card *Card)
-	Show() *Card
+	AddCard(card card.Card)
+	Show() card.Card
 }
 
 func NewHand(name string) *Hand {
@@ -16,12 +18,12 @@ func NewHand(name string) *Hand {
 	}
 }
 
-func (h *Hand) AddCard(card *Card) {
-	h.cards = append(h.cards, card)
+func (h *Hand) AddCard(card card.Card) {
+	h.Cards = append(h.Cards, card)
 }
 
-func (h *Hand) Show(index int) *Card {
-	card := h.cards[index]
-	h.cards = append(h.cards[:index], h.cards[index+1:]...)
-	return card
+func (h *Hand) Show(index int) card.Card {
+	card0 := h.Cards[index]
+	h.Cards = append(h.Cards[:index], h.Cards[index+1:]...)
+	return card0
 }

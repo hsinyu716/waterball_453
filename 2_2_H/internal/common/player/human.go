@@ -1,26 +1,31 @@
-package common
+package player
 
 import (
+	"bufio"
+	"cosmos.cards.showdown/internal/common"
 	"fmt"
+	"os"
 	"strings"
 )
 
+var reader = bufio.NewReader(os.Stdin)
+
 type Human struct {
-	PlayerAdapter
+	common.PlayerAdapter
 }
 
-func (h *Human) NameHimself(i int) {
-	h.name = fmt.Sprintf("name %d", i)
+func (h *Human) NameHimself(i int) string {
+	return fmt.Sprintf("name %d", i)
 }
 
-func (h *Human) TakeTurn() *TurnMove {
-	var ex *ExchangeHands
+func (h *Human) TakeTurn() *common.TurnMove {
+	var ex *common.ExchangeHands
 	if h.HasUsedExchangeHands() {
 		ex = nil
 	} else {
 		ex = h.MakeExchangeHandsDecision()
 	}
-	turnMove := NewTurnMove(&h.PlayerAdapter, ex, nil)
+	turnMove := common.NewTurnMove(&h.PlayerAdapter, ex, nil)
 	if h.HasUsedExchangeHands() {
 		h.GetExchangeHands().Countdown()
 	}
@@ -30,7 +35,7 @@ func (h *Human) TakeTurn() *TurnMove {
 	return turnMove
 }
 
-func (h *Human) MakeExchangeHandsDecision() *ExchangeHands {
+func (h *Human) MakeExchangeHandsDecision() *common.ExchangeHands {
 	fmt.Print("Would you like to perform hands exchange? (y/n): ")
 	input, err := reader.ReadString('\n')
 	if err != nil {
@@ -40,8 +45,8 @@ func (h *Human) MakeExchangeHandsDecision() *ExchangeHands {
 
 	input = strings.TrimSuffix(input, "\n")
 	if input == "y" {
-		selectPlayer := h.filterOtherPlayer()
-		return h.selectExchangeHandsTarget(selectPlayer)
+		selectPlayer := h.FilterOtherPlayer()
+		return h.SelectExchangeHandsTarget(selectPlayer)
 	} else {
 		return nil
 	}
