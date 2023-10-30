@@ -21,8 +21,8 @@ func (h *HeroWeakenHandler) Handle(spritePositions []sprite.ISprite, from, to in
 	adapter.Handle(spritePositions, from, to)
 }
 
-func (h *HeroWeakenHandler) match(handler *CollisionHandler, fromSprite, toSprite sprite.ISprite) bool {
-	return handler.strengthenOrWeaken(fromSprite, toSprite, sprite.WeakenType)
+func (h *HeroWeakenHandler) match(fromSprite, toSprite sprite.ISprite) bool {
+	return sprite.StrengthenOrWeaken(fromSprite, toSprite, sprite.WeakenType)
 }
 
 func (h *HeroWeakenHandler) Collision(fromSprite, toSprite sprite.ISprite, spritePositions *[]sprite.ISprite) {

@@ -7,7 +7,8 @@ import (
 	"fmt"
 )
 
-type World struct{}
+type World struct {
+}
 
 var (
 	spritePositions []sprite.ISprite

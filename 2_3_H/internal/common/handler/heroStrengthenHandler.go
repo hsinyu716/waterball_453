@@ -17,12 +17,20 @@ func NewHeroStrengthenHandler(nextHandler ICollisionHandler) ICollisionHandler {
 }
 
 func (h *HeroStrengthenHandler) Handle(spritePositions []sprite.ISprite, from, to int) {
-	adapter := NewCollisionHandler(h, h.nextHandler)
-	adapter.Handle(spritePositions, from, to)
+	ctrl := NewCollisionHandler(h, h.nextHandler)
+	ctrl.Handle(spritePositions, from, to)
 }
 
-func (h *HeroStrengthenHandler) match(handler *CollisionHandler, fromSprite, toSprite sprite.ISprite) bool {
-	return handler.strengthenOrWeaken(fromSprite, toSprite, sprite.StrengthenType)
+func (h *HeroStrengthenHandler) match(fromSprite, toSprite sprite.ISprite) bool {
+	match := false
+	for _, hpType := range sprite.StrengthenType {
+		match = reflect.TypeOf(fromSprite).String() == string(sprite.HeroSprite) && reflect.TypeOf(toSprite).String() == hpType ||
+			reflect.TypeOf(fromSprite).String() == hpType && reflect.TypeOf(toSprite).String() == string(sprite.HeroSprite)
+		if match {
+			break
+		}
+	}
+	return match
 }
 
 func (h *HeroStrengthenHandler) Collision(fromSprite, toSprite sprite.ISprite, spritePositions *[]sprite.ISprite) {

@@ -22,7 +22,7 @@ func (f *BothDisappearHandler) Handle(spritePositions []sprite.ISprite, from, to
 	handler.Handle(spritePositions, from, to)
 }
 
-func (f *BothDisappearHandler) match(_ *CollisionHandler, fromSprite, toSprite sprite.ISprite) bool {
+func (f *BothDisappearHandler) match(fromSprite, toSprite sprite.ISprite) bool {
 	isMatch := false
 	for _, fromType := range sprite.ConflictType {
 		for _, toType := range sprite.ConflictType {

@@ -22,7 +22,7 @@ func (s *SameSpriteHandler) Handle(spritePositions []sprite.ISprite, from, to in
 	handler.Handle(spritePositions, from, to)
 }
 
-func (s *SameSpriteHandler) match(_ *CollisionHandler, fromSprite, toSprite sprite.ISprite) bool {
+func (s *SameSpriteHandler) match(fromSprite, toSprite sprite.ISprite) bool {
 	return reflect.TypeOf(fromSprite) == reflect.TypeOf(toSprite)
 }
 

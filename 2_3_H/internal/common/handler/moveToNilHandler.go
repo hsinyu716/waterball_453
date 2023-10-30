@@ -22,7 +22,7 @@ func (s *MoveToNilHandler) Handle(spritePositions []sprite.ISprite, from, to int
 	handler.Handle(spritePositions, from, to)
 }
 
-func (s *MoveToNilHandler) match(_ *CollisionHandler, fromSprite, toSprite sprite.ISprite) bool {
+func (s *MoveToNilHandler) match(fromSprite, toSprite sprite.ISprite) bool {
 	return fromSprite != nil && reflect.TypeOf(toSprite).String() == string(sprite.NilSprite)
 }
 

@@ -1,6 +1,9 @@
 package sprite
 
-import "fmt"
+import (
+	"fmt"
+	"reflect"
+)
 
 type Sprite struct {
 	sign     string
@@ -65,3 +68,15 @@ var (
 		string(IceSprite),
 	}
 )
+
+func StrengthenOrWeaken(fromSprite, toSprite ISprite, spriteType []string) bool {
+	match := false
+	for _, hpType := range spriteType {
+		match = reflect.TypeOf(fromSprite).String() == string(HeroSprite) && reflect.TypeOf(toSprite).String() == hpType ||
+			reflect.TypeOf(fromSprite).String() == hpType && reflect.TypeOf(toSprite).String() == string(HeroSprite)
+		if match {
+			break
+		}
+	}
+	return match
+}
