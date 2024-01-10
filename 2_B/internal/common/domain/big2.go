@@ -57,36 +57,38 @@ func (b *Big2) PlayRound(input []string) {
 			inputText = input[0]
 			input = input[1:]
 		}
-		if b.playStatus[b.nowIndex%4] {
-			iPlayer := b.Players[b.nowIndex%4]
-			iPlayer.SetBig2(b)
+		//fmt.Println("Key:", inputText)
+		//if b.playStatus[b.nowIndex%4] {
+		iPlayer := b.Players[b.nowIndex%4]
+		iPlayer.SetBig2(b)
 
-			if nextOne {
-				fmt.Println(fmt.Sprintf("輪到%s了", iPlayer.GetName()))
-			}
-			turn := iPlayer.TakeTurn(inputText)
-			nextOne = true
-			if turn == -1 {
-				b.playStatus[b.nowIndex%4] = false
-				b.passCount++
-				b.nowIndex++
-			} else if turn == 1 {
-				b.playStatus = []bool{true, true, true, true}
-				b.passCount = 0
-				b.nowIndex++
-			} else {
-				nextOne = false
-			}
-			if b.passCount == 3 {
-				b.passCount = 0
-				b.TopPlay = nil
-				b.TopPlayer = b.Players[b.nowIndex%4]
-				fmt.Println("新的回合開始了。")
-				b.playStatus = []bool{true, true, true, true}
-			}
-		} else {
-			b.nowIndex++
+		if nextOne {
+			fmt.Println(fmt.Sprintf("輪到%s了", iPlayer.GetName()))
 		}
+		turn := iPlayer.TakeTurn(inputText)
+		nextOne = true
+		if turn == -1 {
+			b.playStatus[b.nowIndex%4] = false
+			b.passCount++
+			b.nowIndex++
+		} else if turn == 1 {
+			// 連續三玩家pass playStatus失效
+			b.playStatus = []bool{true, true, true, true}
+			b.passCount = 0
+			b.nowIndex++
+		} else {
+			nextOne = false
+		}
+		if b.passCount == 3 {
+			b.passCount = 0
+			b.TopPlay = nil
+			b.TopPlayer = b.Players[b.nowIndex%4]
+			fmt.Println("新的回合開始了。")
+			b.playStatus = []bool{true, true, true, true}
+		}
+		//} else {
+		//	b.nowIndex++
+		//}
 		if b.Winner != nil {
 			fmt.Println(fmt.Sprintf("遊戲結束，遊戲的勝利者為 %s ", b.Winner.GetName()))
 			break

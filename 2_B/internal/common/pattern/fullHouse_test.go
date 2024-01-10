@@ -12,47 +12,46 @@ func TestFullHouseTestSuite(t *testing.T) {
 
 type FullHouseTestSuite struct {
 	suite.Suite
-	cards []poker.Card
+	cards       []*poker.Card
+	cardPattern ICardPattern
 }
 
-func (s *FullHouseTestSuite) SetupSuite() {
-	var cards []poker.Card
+func (f *FullHouseTestSuite) SetupSuite() {
+	var cards []*poker.Card
 	card := poker.NewCard(1, 1)
-	cards = append(cards, *card)
+	cards = append(cards, card)
 	card = poker.NewCard(1, 2)
-	cards = append(cards, *card)
+	cards = append(cards, card)
 	card = poker.NewCard(2, 1)
-	cards = append(cards, *card)
+	cards = append(cards, card)
 	card = poker.NewCard(2, 3)
-	cards = append(cards, *card)
+	cards = append(cards, card)
 	card = poker.NewCard(2, 2)
-	cards = append(cards, *card)
-	s.cards = cards
+	cards = append(cards, card)
+	f.cards = cards
+	f.cardPattern = NewPatternFullHouse(nil)
 }
 
-func (s *FullHouseTestSuite) TestFullHouse() {
-	fullHouse := NewPatternFullHouse(s.cards, nil)
-	validate := fullHouse.Validate()
-	s.True(validate)
+func (f *FullHouseTestSuite) TestFullHouse() {
+	f.cardPattern.Validate(f.cards)
 }
 
-func (s *FullHouseTestSuite) TestFullHouseMax() {
-	fullHouse := NewPatternFullHouse(s.cards, nil)
-	s.Equal(*poker.NewCard(2, 3), fullHouse.GetMax())
+func (f *FullHouseTestSuite) TestFullHouseMax() {
+	validate := f.cardPattern.Validate(f.cards)
+	f.Equal(*poker.NewCard(2, 3), validate.GetMax())
 }
 
-func (s *FullHouseTestSuite) TestFullHouseFail() {
-	var cards []poker.Card
+func (f *FullHouseTestSuite) TestFullHouseFail() {
+	var cards []*poker.Card
 	card := poker.NewCard(1, 1)
-	cards = append(cards, *card)
+	cards = append(cards, card)
 	card = poker.NewCard(1, 2)
-	cards = append(cards, *card)
+	cards = append(cards, card)
 	card = poker.NewCard(2, 3)
-	cards = append(cards, *card)
+	cards = append(cards, card)
 	card = poker.NewCard(2, 3)
-	cards = append(cards, *card)
+	cards = append(cards, card)
 	card = poker.NewCard(3, 4)
-	cards = append(cards, *card)
-	fullHouse := NewPatternFullHouse(cards, nil)
-	s.Nil(fullHouse)
+	cards = append(cards, card)
+	f.Nil(f.cardPattern.Validate(cards))
 }

@@ -18,7 +18,6 @@ func NewClubValidator(next IValidator) IValidator {
 }
 
 func (c *ClubValidator) Validation(entity ValidatorEntity) int {
-	fmt.Println("in club")
 	clubIndex, hasClub := entity.Hand.HasClub()
 	if hasClub {
 		exists, _ := utils.InArray(strconv.Itoa(clubIndex), entity.KeyIndex)

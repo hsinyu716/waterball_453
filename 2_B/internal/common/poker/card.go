@@ -1,8 +1,23 @@
 package poker
 
+import "sort"
+
 type Card struct {
 	rank RankEnumType
 	suit SuitEnumType
+}
+
+type Cards struct {
+	Cards []*Card
+}
+
+func (c *Cards) SortRank() {
+	sort.Slice(c.Cards, func(i, j int) bool {
+		if c.Cards[i].GetRank() == c.Cards[j].GetRank() {
+			return c.Cards[i].GetSuit() < c.Cards[j].GetSuit()
+		}
+		return c.Cards[i].GetRank() < c.Cards[j].GetRank()
+	})
 }
 
 func NewCard(rank RankEnumType, suit SuitEnumType) *Card {

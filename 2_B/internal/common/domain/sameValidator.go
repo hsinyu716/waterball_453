@@ -17,7 +17,6 @@ func NewSameValidator(next IValidator) IValidator {
 }
 
 func (s *SameValidator) Validation(entity ValidatorEntity) int {
-	fmt.Println("in same")
 	sameMap := make(map[int]bool)
 	same := false
 	for _, index := range entity.KeyIndex {

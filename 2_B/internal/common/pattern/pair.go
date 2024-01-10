@@ -2,33 +2,41 @@ package pattern
 
 import (
 	"cosmos.big2/internal/common/poker"
+	"sort"
 )
 
 type Pair struct {
 	CardPattern
+	nextHandler ICardPattern
+	size        int
 }
 
-func NewPatternPair(cards []*poker.Card, next ICardPattern) ICardPattern {
-	pair := &Pair{
-		CardPattern{
-			size:  2,
-			cards: cards,
-		},
+func NewPatternPair(next ICardPattern) ICardPattern {
+	return &Pair{
+		nextHandler: next,
+		size:        2,
 	}
-	if pair.Validate() {
-		pair.maxCard = *pair.cards[len(pair.cards)-1]
-		return pair
-	}
-	return next
 }
 
-func (p *Pair) Validate() bool {
-	p.SortRank()
-	p.SortSuit()
-	if len(p.cards) != p.size {
-		return false
+func (p *Pair) Validate(cards []*poker.Card) ICardPattern {
+	sort.Slice(cards, func(i, j int) bool {
+		if cards[i].GetRank() == cards[j].GetRank() {
+			return cards[i].GetSuit() < cards[j].GetSuit()
+		}
+		return cards[i].GetRank() < cards[j].GetRank()
+	})
+	if len(cards) == p.size {
+		c0 := cards[0]
+		c1 := cards[1]
+		isPair := c0.GetRank() == c1.GetRank() && c0.GetSuit() != c1.GetSuit()
+		if isPair {
+			p.SetCards(cards)
+			p.SetMax(cards[len(cards)-1])
+			return p
+		}
 	}
-	c0 := p.cards[0]
-	c1 := p.cards[1]
-	return c0.GetRank() == c1.GetRank() && c0.GetSuit() != c1.GetSuit()
+	if p.nextHandler != nil {
+		return p.nextHandler.Validate(cards)
+	}
+	return nil
 }

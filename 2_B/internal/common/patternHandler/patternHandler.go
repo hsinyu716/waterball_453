@@ -2,6 +2,8 @@ package patternHandler
 
 import (
 	"cosmos.big2/internal/common/pattern"
+	"cosmos.big2/internal/common/poker"
+	"fmt"
 	"reflect"
 )
 
@@ -9,6 +11,7 @@ type IPatternHandler interface {
 	Handle(card, topPlay pattern.ICardPattern) int
 	Validate(card, topPlay pattern.ICardPattern) bool
 	PrintCard(card pattern.ICardPattern)
+	CardString(card pattern.ICardPattern) string
 }
 
 type PatternHandler struct {
@@ -25,14 +28,6 @@ func NewPatternHandler(handler, nextHandler IPatternHandler) *PatternHandler {
 
 func (p *PatternHandler) Handle(card, topPlay pattern.ICardPattern) int {
 	if p.Validate(card, topPlay) {
-		//p.hand.PlayCard(cards)
-		//if h.hand.Size() == 0 {
-		//	h.big2.Winner = h
-		//	return 1
-		//}
-		//h.big2.TopPlayer = h
-		//h.big2.TopPlay = cardPattern
-		//fmt.Println(fmt.Sprintf("目前頂牌玩家為 %s, 頂牌為 %s ", h.big2.TopPlayer.GetName(), h.big2.TopPlay.ShowCard()))
 		return 1
 	} else {
 		return p.next(p.nextHandler, card, topPlay)
@@ -43,14 +38,13 @@ func (p *PatternHandler) Validate(card, topPlay pattern.ICardPattern) bool {
 	if card == nil {
 		return false
 	}
-	if card.Validate() && topPlay == nil {
-		p.PrintCard(card)
+	if topPlay == nil {
+		p.handler.PrintCard(card)
 		return true
 	}
-
-	if card.Validate() && reflect.TypeOf(card) == reflect.TypeOf(topPlay) {
+	if reflect.TypeOf(card) == reflect.TypeOf(topPlay) {
 		topMax := topPlay.GetMax()
-		p.PrintCard(card)
+		p.handler.PrintCard(card)
 		max := card.GetMax()
 		if max.GetRank() > topMax.GetRank() {
 			return true
@@ -62,12 +56,17 @@ func (p *PatternHandler) Validate(card, topPlay pattern.ICardPattern) bool {
 	return false
 }
 
-func (p *PatternHandler) PrintCard(card pattern.ICardPattern) {
-}
-
 func (p *PatternHandler) next(handler IPatternHandler, card, topPlay pattern.ICardPattern) int {
 	if handler != nil {
 		return handler.Handle(card, topPlay)
 	}
 	return 0
+}
+
+func (p *PatternHandler) CardString(card pattern.ICardPattern) string {
+	cardText := ""
+	for _, c := range card.GetCards() {
+		cardText = fmt.Sprintf("%s%s[%s] ", cardText, poker.SuitMap[c.GetSuit()], poker.RankMap[c.GetRank()])
+	}
+	return cardText
 }

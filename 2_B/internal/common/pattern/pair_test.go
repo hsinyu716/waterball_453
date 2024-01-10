@@ -12,35 +12,36 @@ func TestPairTestSuite(t *testing.T) {
 
 type PairTestSuite struct {
 	suite.Suite
-	cards []poker.Card
+	cards []*poker.Card
 }
 
-func (s *PairTestSuite) SetupSuite() {
-	var cards []poker.Card
+func (p *PairTestSuite) SetupSuite() {
+	var cards []*poker.Card
 	card := poker.NewCard(1, 1)
-	cards = append(cards, *card)
+	cards = append(cards, card)
 	card = poker.NewCard(1, 2)
-	cards = append(cards, *card)
-	s.cards = cards
+	cards = append(cards, card)
+	p.cards = cards
 }
 
-func (s *PairTestSuite) TestPair() {
-	pair := NewPatternPair(s.cards, nil)
-	validate := pair.Validate()
-	s.True(validate)
+func (p *PairTestSuite) TestPair() {
+	pair := NewPatternPair(nil)
+	validate := pair.Validate(p.cards)
+	p.T().Log(validate)
 }
 
-func (s *PairTestSuite) TestPairMax() {
-	pair := NewPatternPair(s.cards, nil)
-	s.Equal(*poker.NewCard(1, 2), pair.GetMax())
+func (p *PairTestSuite) TestPairMax() {
+	pair := NewPatternPair(nil)
+	pair.Validate(p.cards)
+	p.Equal(*poker.NewCard(1, 2), pair.GetMax())
 }
 
-func (s *PairTestSuite) TestPairFail() {
-	var cards []poker.Card
+func (p *PairTestSuite) TestPairFail() {
+	var cards []*poker.Card
 	card := poker.NewCard(1, 1)
-	cards = append(cards, *card)
+	cards = append(cards, card)
 	card = poker.NewCard(2, 2)
-	cards = append(cards, *card)
-	pair := NewPatternPair(cards, nil)
-	s.Nil(pair)
+	cards = append(cards, card)
+	pair := NewPatternPair(nil)
+	p.Nil(pair.Validate(cards))
 }

@@ -2,13 +2,12 @@ package patternHandler
 
 import (
 	"cosmos.big2/internal/common/pattern"
-	"cosmos.big2/internal/common/poker"
 	"fmt"
 	"reflect"
 )
 
 type FullHouseHandler struct {
-	IPatternHandler
+	PatternHandler
 	nextHandler IPatternHandler
 }
 
@@ -20,18 +19,22 @@ func NewFullHouseHandler(pattern IPatternHandler) IPatternHandler {
 
 func (f *FullHouseHandler) Handle(card, topPlay pattern.ICardPattern) int {
 	handler := NewPatternHandler(f, f.nextHandler)
-	return handler.Handle(card, topPlay)
+	if reflect.TypeOf(card) != nil && reflect.TypeOf(card).String() == "*pattern.FullHouse" {
+		return handler.Handle(card, topPlay)
+	}
+	return f.next(f.nextHandler, card, topPlay)
 }
 
 func (f *FullHouseHandler) Validate(card, topPlay pattern.ICardPattern) bool {
 	if card == nil {
 		return false
 	}
-	if card.Validate() && topPlay == nil {
+
+	if topPlay == nil {
 		f.PrintCard(card)
 		return true
 	}
-	if card.Validate() && reflect.TypeOf(card) == reflect.TypeOf(topPlay) {
+	if reflect.TypeOf(card) == reflect.TypeOf(topPlay) {
 		topMax := topPlay
 		f.PrintCard(card)
 
@@ -45,8 +48,6 @@ func (f *FullHouseHandler) Validate(card, topPlay pattern.ICardPattern) bool {
 
 func (f *FullHouseHandler) PrintCard(card pattern.ICardPattern) {
 	cardText := "打出了 葫蘆 "
-	for _, c := range card.GetCards() {
-		cardText = fmt.Sprintf("%s%s[%s] ", cardText, poker.SuitMap[c.GetSuit()], poker.RankMap[c.GetRank()])
-	}
-	fmt.Println(cardText)
+	cardString := f.CardString(card)
+	fmt.Println(fmt.Sprintf("%s%s", cardText, cardString))
 }

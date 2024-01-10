@@ -7,42 +7,44 @@ import (
 
 type FullHouse struct {
 	CardPattern
-	matchThree int
+	nextHandler ICardPattern
+	matchThree  int
+	size        int
 }
 
-func NewPatternFullHouse(cards []*poker.Card, next ICardPattern) ICardPattern {
-	fullHouse := &FullHouse{
-		CardPattern: CardPattern{
-			size:  5,
-			cards: cards,
-		},
+func NewPatternFullHouse(next ICardPattern) ICardPattern {
+	return &FullHouse{
+		nextHandler: next,
+		size:        5,
 	}
-	if fullHouse.Validate() {
-		fullHouse.maxCard = *fullHouse.cards[len(fullHouse.cards)-1]
-		return fullHouse
-	}
-	return next
 }
 
-func (f *FullHouse) Validate() bool {
-	if len(f.cards) != f.size {
-		return false
-	}
-	f.SortRank()
-	//f.SortSuit()
-	match := map[int]int{}
-	var matchNumber []int
-
-	for _, card := range f.cards {
-		if exists, _ := utils.InArray(int(card.GetRank()), matchNumber); !exists {
-			matchNumber = append(matchNumber, int(card.GetRank()))
+func (f *FullHouse) Validate(cards []*poker.Card) ICardPattern {
+	if len(cards) == f.size {
+		f.SortRank()
+		match := map[int]int{}
+		var matchNumber []int
+		for _, card := range cards {
+			if exists, _ := utils.InArray(int(card.GetRank()), matchNumber); !exists {
+				matchNumber = append(matchNumber, int(card.GetRank()))
+			}
+			match[int(card.GetRank())] += 1
+			if match[int(card.GetRank())] == 3 {
+				f.matchThree = int(card.GetRank())
+			}
 		}
-		match[int(card.GetRank())] += 1
-		if match[int(card.GetRank())] == 3 {
-			f.matchThree = int(card.GetRank())
+		isFullHouse := match[matchNumber[0]] == 2 && match[matchNumber[1]] == 3 || match[matchNumber[0]] == 3 && match[matchNumber[1]] == 2
+		if isFullHouse {
+			f.SetCards(cards)
+			f.SortRank()
+			f.SetMax(cards[len(cards)-1])
+			return f
 		}
 	}
-	return match[matchNumber[0]] == 2 && match[matchNumber[1]] == 3 || match[matchNumber[0]] == 3 && match[matchNumber[1]] == 2
+	if f.nextHandler != nil {
+		return f.nextHandler.Validate(cards)
+	}
+	return nil
 }
 
 func (f *FullHouse) GetThree() int {

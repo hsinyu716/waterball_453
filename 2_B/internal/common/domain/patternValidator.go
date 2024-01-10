@@ -18,13 +18,14 @@ func NewPatternValidator(next IValidator) IValidator {
 }
 
 func (p *PatternValidator) Validation(entity ValidatorEntity) int {
-	fmt.Println("in pattern")
-	cardPattern := pattern.NewPatternSingle(entity.Cards,
-		pattern.NewPatternPair(entity.Cards,
-			pattern.NewPatternStraight(entity.Cards,
-				pattern.NewPatternFullHouse(entity.Cards, nil))))
+	cardPattern :=
+		pattern.NewPatternSingle(
+			pattern.NewPatternPair(
+				pattern.NewPatternStraight(
+					pattern.NewPatternFullHouse(nil))))
+	play := cardPattern.Validate(entity.Cards)
 
-	if cardPattern == nil {
+	if play == nil {
 		fmt.Println("此牌型不合法，請再嘗試一次。")
 		return 0
 	}
@@ -35,8 +36,7 @@ func (p *PatternValidator) Validation(entity ValidatorEntity) int {
 			patternHandler.NewPairHandler(
 				patternHandler.NewStraightHandler(
 					patternHandler.NewFullHouseHandler(nil))))
-	compare := handler.Handle(cardPattern, entity.TopPlay)
-
+	compare := handler.Handle(play, entity.TopPlay)
 	if compare == 1 {
 		entity.Hand.PlayCard(entity.Cards)
 		if entity.Hand.Size() == 0 {
@@ -44,9 +44,8 @@ func (p *PatternValidator) Validation(entity ValidatorEntity) int {
 			return 1
 		}
 		entity.Player.GetBig2().TopPlayer = entity.Player
-		entity.Player.GetBig2().TopPlay = cardPattern
-		fmt.Println(fmt.Sprintf("目前頂牌玩家為 %s, 頂牌為 %s ", entity.Player.GetBig2().TopPlayer.GetName(), entity.Player.GetBig2().TopPlay.ShowCard()))
-		return 1
+		entity.Player.GetBig2().TopPlay = play
+		fmt.Println(fmt.Sprintf("目前頂牌玩家為 %s, 頂牌為 %s ", entity.Player.GetName(), play.ShowCard()))
 	} else if compare == 0 {
 		fmt.Println(fmt.Sprintf("牌型比頂牌小, 頂牌為%s", entity.Player.GetBig2().TopPlay.ShowCard()))
 	}

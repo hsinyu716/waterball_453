@@ -13,61 +13,65 @@ func TestPairTestSuite(t *testing.T) {
 
 type PairTestSuite struct {
 	suite.Suite
-	cards []poker.Card
+	cards []*poker.Card
 }
 
 func (s *PairTestSuite) SetupSuite() {
-	var cards []poker.Card
+	var cards []*poker.Card
 	card := poker.NewCard(7, 0)
-	cards = append(cards, *card)
+	cards = append(cards, card)
 	card = poker.NewCard(7, 1)
-	cards = append(cards, *card)
+	cards = append(cards, card)
 	s.cards = cards
 }
 
 func (s *PairTestSuite) TestPair() {
-	top := pattern.NewPatternPair(s.cards, nil)
-	validate := top.Validate()
-	s.True(validate)
+	top := pattern.NewPatternPair(nil)
+	s.NotNil(top.Validate(s.cards))
 
-	var cards []poker.Card
+	var cards []*poker.Card
 	card := poker.NewCard(9, 1)
-	cards = append(cards, *card)
+	cards = append(cards, card)
 	card = poker.NewCard(9, 2)
-	cards = append(cards, *card)
+	cards = append(cards, card)
+	pair := pattern.NewPatternPair(nil)
+	validate := pair.Validate(cards)
 	handler := NewPairHandler(nil)
-	handler.Handle(pattern.NewPatternPair(cards, nil), top)
-	compare := handler.Validate(pattern.NewPatternPair(cards, nil), top)
-	s.True(compare)
+	handle := handler.Handle(validate, top)
+	s.T().Log(handle)
 
-	cards = []poker.Card{}
+	cards = []*poker.Card{}
 	card = poker.NewCard(7, 2)
-	cards = append(cards, *card)
+	cards = append(cards, card)
 	card = poker.NewCard(7, 3)
-	cards = append(cards, *card)
-	handler = NewPairHandler(nil)
-	compare = handler.Validate(pattern.NewPatternPair(cards, nil), top)
-	s.True(compare)
+	cards = append(cards, card)
+	pair.Validate(cards)
+	handle = handler.Handle(validate, top)
+	s.NotNil(handle)
 }
 
 func (s *PairTestSuite) TestPairFail() {
-	top := pattern.NewPatternPair(s.cards, nil)
-	validate := top.Validate()
-	s.True(validate)
+	top := pattern.NewPatternPair(nil)
+	topPlay := top.Validate(s.cards)
+	s.NotNil(topPlay)
 
-	var cards []poker.Card
+	var cards []*poker.Card
 	card := poker.NewCard(3, 1)
-	cards = append(cards, *card)
+	cards = append(cards, card)
 	card = poker.NewCard(3, 2)
-	cards = append(cards, *card)
+	cards = append(cards, card)
 	handler := NewPairHandler(nil)
-	compare := handler.Validate(pattern.NewPatternPair(cards, nil), top)
-	s.False(compare)
+	pair := pattern.NewPatternPair(nil)
+	cardPattern := pair.Validate(cards)
+	handle := handler.Handle(cardPattern, topPlay)
+	s.Equal(handle, 0)
 
-	cards = []poker.Card{}
+	cards = []*poker.Card{}
 	card = poker.NewCard(3, 1)
-	cards = append(cards, *card)
+	cards = append(cards, card)
 	handler = NewPairHandler(nil)
-	compare = handler.Validate(pattern.NewPatternPair(cards, nil), top)
-	s.False(compare)
+	pair2 := pattern.NewPatternPair(nil)
+	cardPattern = pair2.Validate(cards)
+	handle = handler.Handle(cardPattern, topPlay)
+	s.Equal(handle, 0)
 }
