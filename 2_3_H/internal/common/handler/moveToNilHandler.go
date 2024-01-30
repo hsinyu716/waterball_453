@@ -17,16 +17,16 @@ func NewMoveToNilHandler(nextHandler ICollisionHandler) ICollisionHandler {
 	}
 }
 
-func (s *MoveToNilHandler) Handle(spritePositions []sprite.ISprite, from, to int) {
-	handler := NewCollisionHandler(s, s.nextHandler)
+func (m *MoveToNilHandler) Handle(spritePositions []sprite.ISprite, from, to int) {
+	handler := NewCollisionHandler(m, m.nextHandler)
 	handler.Handle(spritePositions, from, to)
 }
 
-func (s *MoveToNilHandler) match(fromSprite, toSprite sprite.ISprite) bool {
+func (m *MoveToNilHandler) match(fromSprite, toSprite sprite.ISprite) bool {
 	return fromSprite != nil && reflect.TypeOf(toSprite).String() == string(sprite.NilSprite)
 }
 
-func (s *MoveToNilHandler) Collision(fromSprite, toSprite sprite.ISprite, spritePositions *[]sprite.ISprite) {
+func (m *MoveToNilHandler) Collision(fromSprite, toSprite sprite.ISprite, spritePositions *[]sprite.ISprite) {
 	fromSprite.Move(toSprite, spritePositions)
 	utils.MsgPrint(utils.DataMoveToNil)
 }

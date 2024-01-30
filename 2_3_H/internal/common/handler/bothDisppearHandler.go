@@ -17,12 +17,12 @@ func NewBothDisappearHandler(nextHandler ICollisionHandler) ICollisionHandler {
 	}
 }
 
-func (f *BothDisappearHandler) Handle(spritePositions []sprite.ISprite, from, to int) {
-	handler := NewCollisionHandler(f, f.nextHandler)
+func (b *BothDisappearHandler) Handle(spritePositions []sprite.ISprite, from, to int) {
+	handler := NewCollisionHandler(b, b.nextHandler)
 	handler.Handle(spritePositions, from, to)
 }
 
-func (f *BothDisappearHandler) match(fromSprite, toSprite sprite.ISprite) bool {
+func (b *BothDisappearHandler) match(fromSprite, toSprite sprite.ISprite) bool {
 	isMatch := false
 	for _, fromType := range sprite.ConflictType {
 		for _, toType := range sprite.ConflictType {
@@ -38,7 +38,7 @@ func (f *BothDisappearHandler) match(fromSprite, toSprite sprite.ISprite) bool {
 	return isMatch
 }
 
-func (f *BothDisappearHandler) Collision(formSprite, toSprite sprite.ISprite, spritePositions *[]sprite.ISprite) {
+func (b *BothDisappearHandler) Collision(formSprite, toSprite sprite.ISprite, spritePositions *[]sprite.ISprite) {
 	formSprite.Remove(spritePositions)
 	toSprite.Remove(spritePositions)
 	utils.MsgPrint(utils.DataConflict)
