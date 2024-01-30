@@ -1,7 +1,5 @@
 package poker
 
-import "sort"
-
 type Card struct {
 	rank RankEnumType
 	suit SuitEnumType
@@ -11,13 +9,32 @@ type Cards struct {
 	Cards []*Card
 }
 
-func (c *Cards) SortRank() {
-	sort.Slice(c.Cards, func(i, j int) bool {
-		if c.Cards[i].GetRank() == c.Cards[j].GetRank() {
-			return c.Cards[i].GetSuit() < c.Cards[j].GetSuit()
-		}
-		return c.Cards[i].GetRank() < c.Cards[j].GetRank()
-	})
+type CompareResult int
+
+const (
+	// CompareResultSmaller is a CompareResult of type Smaller.
+	CompareResultSmaller CompareResult = iota
+	// CompareResultBigger is a CompareResult of type Bigger.
+	CompareResultBigger
+	// CompareResultEqual is a CompareResult of type Equal.
+	CompareResultEqual
+	// CompareResultInvalid is a CompareResult of type Invalid.
+	CompareResultInvalid
+)
+
+func (c *Card) Compare(card *Card) CompareResult {
+	if c.rank < card.rank {
+		return CompareResultSmaller
+	}
+	if c.rank == card.rank && c.suit < card.suit {
+		return CompareResultSmaller
+	}
+	return CompareResultBigger
+}
+
+// DiffRank return diff rank
+func (c *Card) DiffRank(card *Card) RankEnumType {
+	return c.rank - card.rank
 }
 
 func NewCard(rank RankEnumType, suit SuitEnumType) *Card {

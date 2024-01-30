@@ -7,6 +7,8 @@ import (
 	"strings"
 )
 
+var _ IPlayer = (*Player)(nil)
+
 type Human struct {
 	Player
 }

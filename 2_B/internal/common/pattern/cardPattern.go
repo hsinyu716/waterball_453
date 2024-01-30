@@ -15,7 +15,6 @@ type ICardPattern interface {
 	ShowCard() string
 	GetThree() int
 	SortRank()
-	SortSuit()
 }
 
 type CardPattern struct {
@@ -45,16 +44,7 @@ func (c *CardPattern) GetMax() poker.Card {
 
 func (c *CardPattern) SortRank() {
 	sort.Slice(c.cards, func(i, j int) bool {
-		if c.cards[i].GetRank() == c.cards[j].GetRank() {
-			return c.cards[i].GetSuit() < c.cards[j].GetSuit()
-		}
-		return c.cards[i].GetRank() < c.cards[j].GetRank()
-	})
-}
-
-func (c *CardPattern) SortSuit() {
-	sort.Slice(c.cards, func(i, j int) bool {
-		return c.cards[i].GetSuit() < c.cards[j].GetSuit()
+		return c.cards[i].Compare(c.cards[j]) == poker.CompareResultSmaller
 	})
 }
 

@@ -22,13 +22,13 @@ func (s *Straight) Validate(cards []*poker.Card) ICardPattern {
 		s.SetCards(cards)
 		s.SortRank()
 		continuous := false
-		for i := 0; i < len(cards)-2; i++ {
-			continuous = cards[i+1].GetRank()-cards[i].GetRank() == 1
-			if cards[i+1].GetRank()-cards[i].GetRank() == 9 {
+		for i := 1; i < len(cards); i++ {
+			continuous = cards[i].DiffRank(cards[i-1]) == 1
+			if cards[i].DiffRank(cards[i-1]) == 9 {
 				// [{0 1} {1 1} {2 1} {11 1} {12 1}]
 				//   3     4     5     A     2
 				continuous = true
-			} else if i == 3 && cards[i+1].GetRank()-cards[i].GetRank() == 9 {
+			} else if i == 3 && cards[i].DiffRank(cards[i-1]) == 9 {
 				// [{0 1} {1 1} {2 1} {3 1} {12 1}]
 				//   3     4     5     6     2
 				continuous = true
